@@ -1,0 +1,13 @@
+
+Number of unique tomograms: 648
+
+Distribution of motors per tomogram:
+Number of motors
+0     286
+1     313
+2      30
+3       6
+4       9
+6       3
+10      1
+Name: count, dtype: int64

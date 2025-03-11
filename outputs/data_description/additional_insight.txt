@@ -1,0 +1,38 @@
+
+Sample rows from training labels:
+   row_id      tomo_id  Motor axis 0  Motor axis 1  Motor axis 2  Array shape (axis 0)  Array shape (axis 1)  Array shape (axis 2)  Voxel spacing  Number of motors
+0       0  tomo_003acc          -1.0          -1.0          -1.0                   500                  1912                  1847            6.5                 0
+1       1  tomo_00e047         169.0         546.0         603.0                   300                   959                   928           15.6                 1
+2       2  tomo_00e463         235.0         403.0         137.0                   500                   924                   956           19.7                 6
+3       3  tomo_00e463         243.0         363.0         153.0                   500                   924                   956           19.7                 6
+4       4  tomo_00e463         222.0         379.0         144.0                   500                   924                   956           19.7                 6
+Missing values per column:
+row_id                  0
+tomo_id                 0
+Motor axis 0            0
+Motor axis 1            0
+Motor axis 2            0
+Array shape (axis 0)    0
+Array shape (axis 1)    0
+Array shape (axis 2)    0
+Voxel spacing           0
+Number of motors        0
+dtype: int64
+Tomogram size ranges:
+Z-axis (slices): 300 to 800
+X-axis (width): 924 to 1912
+Y-axis (height): 924 to 1847
+
+Voxel spacing distribution:
+Voxel spacing
+6.5       3
+13.1    291
+13.2      2
+13.3     18
+15.6    177
+16.1     40
+16.8     85
+19.2      7
+19.3     10
+19.7    104
+Name: count, dtype: int64

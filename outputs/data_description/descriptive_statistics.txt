@@ -1,0 +1,10 @@
+                            mean    min     max
+row_id                368.000000    0.0   736.0
+Motor axis 0          101.861601   -1.0   466.0
+Motor axis 1          294.853460   -1.0   904.0
+Motor axis 2          300.818182   -1.0   902.0
+Array shape (axis 0)  422.651289  300.0   800.0
+Array shape (axis 1)  950.207598  924.0  1912.0
+Array shape (axis 2)  954.819539  924.0  1847.0
+Voxel spacing          15.341655    6.5    19.7
+Number of motors        1.127544    0.0    10.0
