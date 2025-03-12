@@ -84,6 +84,74 @@ def create_animation(df, tomo_id, fps=20, imsize=384, frame_skip=1, save_as_gif=
         
     return anim
 
+def create_animation_images(df, tomo_id, n_images=16, imsize=384, save_dir="./"):
+    # Get paths
+    img_paths = sorted(glob(f"{config.DATA_DIR}/train/{tomo_id}/*"))
+
+    pdf = df[df['tomo_id'] == tomo_id]
+    orig_y = pdf["Array shape (axis 1)"].values[0]
+    orig_x = pdf["Array shape (axis 2)"].values[0]
+    ratio_x = imsize / orig_x
+    ratio_y = imsize / orig_y
+    ratio_m = min(ratio_x, ratio_y)
+
+    vox_sp = pdf["Voxel spacing"].values[0]
+
+    # Get images
+    images = np.stack([cv2.imread(path) for path in img_paths], axis=0)
+    images = [np.array(cv2.resize(img, (imsize, imsize))) for img in images]
+    images = (images - np.min(images)) / (np.max(images) - np.min(images) + 1e-6)
+    images = (images * 255).astype(np.uint8)
+
+    mat_imgs = np.copy(images)
+
+    for k, row in pdf.iterrows():
+        m_ax_z = row["Motor axis 0"]
+        m_ax_y = row["Motor axis 1"]
+        m_ax_x = row["Motor axis 2"]
+        for j in range(len(images)):
+            if j == m_ax_z:
+                base_rad = 1000 / vox_sp * ratio_m
+                rad = (base_rad**2 - abs(m_ax_z - j)**2)
+                rad = max(0, rad)**0.5
+                rad = int(np.round(rad))
+                cv2.circle(mat_imgs[j], (int(m_ax_x * ratio_x), int(m_ax_y * ratio_y)), rad, (255, 0, 0), thickness=2)
+                # cv2.putText(mat_imgs[j], 'Motor', (int(m_ax_x * ratio_x), int(m_ax_y * ratio_y) - 10), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 0), thickness=1)
+
+    # Calculate the number of rows and columns for the image matrix
+    n_cols = int(np.ceil(np.sqrt(n_images)))
+    n_rows = int(np.ceil(n_images / n_cols))
+
+    # Determine the indices of the frames to be displayed
+    frame_indices = np.linspace(0, len(images) - 1, n_images).astype(int)
+    
+    # Ensure frames with motor annotations are included
+    motor_frames = pdf["Motor axis 0"].values.astype(int)
+    frame_indices = np.unique(np.concatenate((frame_indices, motor_frames)))
+    frame_indices = frame_indices[:n_images]  # Limit to n_images
+
+    # Create the image matrix
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 3, n_rows * 3))
+    axes = axes.flatten()
+
+    for idx, ax in enumerate(axes):
+        if idx < len(frame_indices):
+            frame_idx = frame_indices[idx]
+            img = mat_imgs[frame_idx]
+            ax.imshow(img, cmap='bone')
+            ax.axis('off')
+            ax.set_title(f"Frame {frame_idx}", fontweight="bold")
+        else:
+            ax.axis('off')
+
+    plt.tight_layout()
+    os.makedirs(save_dir, exist_ok=True)
+    plt.savefig(os.path.join(save_dir, f"{tomo_id}_image_matrix.png"))
+    plt.close()
+
+
+
 if __name__ == '__main__':
     train_labels = pd.read_csv(config.TRAIN_CSV)
-    create_animation(df=train_labels,tomo_id= "tomo_0a8f05",save_as_gif=True, save_dir=f"{config.BASE_DIR}/outputs/tomo_gif")
+    # create_animation(df=train_labels,tomo_id= "tomo_0a8f05",save_as_gif=True, save_dir=f"{config.BASE_DIR}/outputs/tomo_gif")
+    create_animation_images(df=train_labels, tomo_id="tomo_00e463", n_images=9,save_dir=f"{config.BASE_DIR}/outputs/motor_visualization")

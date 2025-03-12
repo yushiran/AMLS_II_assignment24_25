@@ -116,6 +116,9 @@ def integrate_dataset_info(train_labels: pd.DataFrame):
     # Show descriptive statistics and histograms
     show_descriptive_statistics(train_labels)
 
+    # Show correlation matrix
+    show_correlation_matrix(train_labels)
+
 
 if __name__ == '__main__':
     # Load the training labels CSV into a pandas DataFrame
