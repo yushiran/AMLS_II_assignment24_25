@@ -1,10 +1,13 @@
 paths:
   base_dir: '/home/yushiran/BYU_Locating_Bacterial_Flagellar_Motors_2025'
-  data_dir: '/home/yushiran/BYU_Locating_Bacterial_Flagellar_Motors_2025/byu-locating-bacterial-flagellar-motors-2025'
+  data_dir: 'byu-locating-bacterial-flagellar-motors-2025'
   train_csv: 'train_labels.csv'
   train_dir: 'train'
   test_dir: 'test'
-  output_dir: './'
-  model_dir: './models'
+  output_dir: 'outputs'
+  model_dir: 'models'
+  yolo_dataset_dir: 'yolo_dataset'
+  yolo_model_dir: 'models/yolo_v8'
+  yolo_weights: 'yolo_weights'
 random_seed: 42
 device: 'cuda'

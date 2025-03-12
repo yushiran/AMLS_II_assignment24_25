@@ -11,16 +11,36 @@ class Config:
 
         # 初始化路径
         self.BASE_DIR = self.config['paths']['base_dir']
-        self.DATA_DIR = self.config['paths']['data_dir']
+        self.DATA_DIR = os.path.join(self.BASE_DIR, self.config['paths']['data_dir'])
         self.TRAIN_CSV = os.path.join(self.DATA_DIR, self.config['paths']['train_csv'])
         self.TRAIN_DIR = os.path.join(self.DATA_DIR, self.config['paths']['train_dir'])
         self.TEST_DIR = os.path.join(self.DATA_DIR, self.config['paths']['test_dir'])
-        self.OUTPUT_DIR = self.config['paths']['output_dir']
-        self.MODEL_DIR = self.config['paths']['model_dir']
+        self.OUTPUT_DIR = os.path.join(self.BASE_DIR,self.config['paths']['output_dir'])
+        self.MODEL_DIR = os.path.join(self.BASE_DIR,self.config['paths']['model_dir'])
+        # YOLO数据集目录
+        self.YOLO_DATAESET_DIR = os.path.join(self.BASE_DIR,self.config['paths']['yolo_dataset_dir'])
+        self.YOLO_IMAGES_TRAIN = os.path.join(self.YOLO_DATAESET_DIR, "images", "train")
+        self.YOLO_IMAGES_VAL = os.path.join(self.YOLO_DATAESET_DIR, "images", "val")
+        self.YOLO_LABELS_TRAIN = os.path.join(self.YOLO_DATAESET_DIR, "labels", "train")
+        self.YOLO_LABELS_VAL = os.path.join(self.YOLO_DATAESET_DIR, "labels", "val")
+        # YOLO模型位置
+        self.YOLO_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['yolo_model_dir'])
+        self.YOLO_WEIGHTS_DIR = os.path.join(self.YOLO_MODEL_DIR, self.config['paths']['yolo_weights'])
 
-        # 创建输出目录
-        os.makedirs(self.OUTPUT_DIR, exist_ok=True)
-        os.makedirs(self.MODEL_DIR, exist_ok=True)
+        # 创建必要的目录
+        dirs_to_create = [
+            self.OUTPUT_DIR,
+            self.MODEL_DIR,
+            self.YOLO_DATAESET_DIR,
+            self.YOLO_IMAGES_TRAIN,
+            self.YOLO_IMAGES_VAL,
+            self.YOLO_LABELS_TRAIN,
+            self.YOLO_LABELS_VAL,
+            self.YOLO_MODEL_DIR,
+            self.YOLO_WEIGHTS_DIR
+        ]
+        for directory in dirs_to_create:
+            os.makedirs(directory, exist_ok=True)
 
         # 初始化设备
         self.DEVICE = torch.device(self.config['device'])

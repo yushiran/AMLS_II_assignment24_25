@@ -12,7 +12,7 @@ import glob
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 import torch
 import torch.nn as nn

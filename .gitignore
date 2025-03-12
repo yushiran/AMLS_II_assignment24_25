@@ -171,3 +171,4 @@ cython_debug/
 .pypirc
 
 byu-locating-bacterial-flagellar-motors-2025/
+yolo_dataset/

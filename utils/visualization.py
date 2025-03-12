@@ -149,9 +149,117 @@ def create_animation_images(df, tomo_id, n_images=16, imsize=384, save_dir="./")
     plt.savefig(os.path.join(save_dir, f"{tomo_id}_image_matrix.png"))
     plt.close()
 
+def visualize_random_training_samples(num_samples=4,images_train_dir=config.YOLO_IMAGES_TRAIN,labels_train_dir=config.YOLO_LABELS_TRAIN):
+    """
+    Visualize random training samples with YOLO annotations.
+    
+    Args:
+        num_samples (int): Number of random images to display.
+    """
+    # Get all image files from the train directory (support multiple image extensions)
+    image_files = []
+    for ext in ['*.jpg', '*.jpeg', '*.png']:
+        image_files.extend(glob(os.path.join(images_train_dir, "**", ext), recursive=True))
+    
+    if len(image_files) == 0:
+        print("No image files found in the train directory!")
+        return
+        
+    num_samples = min(num_samples, len(image_files))
+    random_images = random.sample(image_files, num_samples)
+    
+    # Create subplots for visualization
+    rows = int(np.ceil(num_samples / 2))
+    cols = min(num_samples, 2)
+    fig, axes = plt.subplots(rows, cols, figsize=(14, 5 * rows))
+    
+    if num_samples == 1:
+        axes = np.array([axes])
+    axes = axes.flatten()
+    
+    for i, img_path in enumerate(random_images):
+        try:
+            # Determine corresponding label file (YOLO format)
+            relative_path = os.path.relpath(img_path, images_train_dir)
+            label_path = os.path.join(labels_train_dir, os.path.splitext(relative_path)[0] + '.txt')
+            
+            # Load and normalize image for display
+            img = Image.open(img_path)
+            img_width, img_height = img.size
+            img_array = np.array(img)
+            p2 = np.percentile(img_array, 2)
+            p98 = np.percentile(img_array, 98)
+            normalized = np.clip(img_array, p2, p98)
+            normalized = 255 * (normalized - p2) / (p98 - p2)
+            img_normalized = Image.fromarray(np.uint8(normalized))
+            
+            # Convert to RGB for annotation drawing
+            img_rgb = img_normalized.convert('RGB')
+            overlay = Image.new('RGBA', img_rgb.size, (0, 0, 0, 0))
+            draw = ImageDraw.Draw(overlay)
+            
+            # Load YOLO annotations if available
+            annotations = []
+            if os.path.exists(label_path):
+                with open(label_path, 'r') as f:
+                    for line in f:
+                        # YOLO format: class x_center y_center width height (normalized values)
+                        values = line.strip().split()
+                        class_id = int(values[0])
+                        x_center = float(values[1]) * img_width
+                        y_center = float(values[2]) * img_height
+                        width = float(values[3]) * img_width
+                        height = float(values[4]) * img_height
+                        annotations.append({
+                            'class_id': class_id,
+                            'x_center': x_center,
+                            'y_center': y_center,
+                            'width': width,
+                            'height': height
+                        })
+            
+            # Draw annotations on the overlay
+            for ann in annotations:
+                x_center = ann['x_center']
+                y_center = ann['y_center']
+                width = ann['width']
+                height = ann['height']
+                x1 = max(0, int(x_center - width/2))
+                y1 = max(0, int(y_center - height/2))
+                x2 = min(img_width, int(x_center + width/2))
+                y2 = min(img_height, int(y_center + height/2))
+                draw.rectangle([x1, y1, x2, y2], fill=(255, 0, 0, 64), outline=(255, 0, 0, 200))
+                draw.text((x1, y1-10), f"Class {ann['class_id']}", fill=(255, 0, 0, 255))
+            
+            # Indicate if no annotations were found
+            if not annotations:
+                draw.text((10, 10), "No annotations found", fill=(255, 0, 0, 255))
+            
+            # Composite overlay and display image
+            img_rgb = Image.alpha_composite(img_rgb.convert('RGBA'), overlay).convert('RGB')
+            axes[i].imshow(np.array(img_rgb))
+            # img_name = os.path.basename(img_path)
+            # axes[i].set_title(f"Image: {img_name}\nAnnotations: {len(annotations)}")
+            # axes[i].axis('on')
+            
+        except Exception as e:
+            print(f"Error processing image {img_path}: {e}")
+            axes[i].text(0.5, 0.5, f"Error loading image: {os.path.basename(img_path)}",
+                         horizontalalignment='center', verticalalignment='center')
+            axes[i].axis('off')
+    
+    # Turn off any extra subplots
+    for j in range(i + 1, len(axes)):
+        axes[j].axis('off')
+    
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_DIR}/motor_visualization/random_training_samples.png")
+    print(f"Displayed {num_samples} random images with YOLO annotations")
+
 
 
 if __name__ == '__main__':
     train_labels = pd.read_csv(config.TRAIN_CSV)
     # create_animation(df=train_labels,tomo_id= "tomo_0a8f05",save_as_gif=True, save_dir=f"{config.BASE_DIR}/outputs/tomo_gif")
-    create_animation_images(df=train_labels, tomo_id="tomo_00e463", n_images=9,save_dir=f"{config.BASE_DIR}/outputs/motor_visualization")
+    # create_animation_images(df=train_labels, tomo_id="tomo_00e463", n_images=9,save_dir=f"{config.BASE_DIR}/outputs/motor_visualization")
+    # visualize_random_training_samples(num_samples=4,images_train_dir=config.YOLO_IMAGES_TRAIN,labels_train_dir=config.YOLO_LABELS_TRAIN)
