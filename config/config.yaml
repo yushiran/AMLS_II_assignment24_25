@@ -5,9 +5,19 @@ paths:
   train_dir: 'train'
   test_dir: 'test'
   output_dir: 'outputs'
+  submission_dir: 'outputs/submissions'
   model_dir: 'models'
   yolo_dataset_dir: 'yolo_dataset'
   yolo_model_dir: 'models/yolo_v8'
   yolo_weights: 'yolo_weights'
+  yolo_best_model_dir: 'models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/weights/best.pt'
+
 random_seed: 42
-device: 'cuda'
+
+#inference parameters
+# Define detection and processing parameters
+infer_params:
+  confidence_threshold: 0.45
+  max_detections_per_tomo: 3
+  nms_iou_threshold: 0.2
+  concentration: 1  # Process a fraction of slices for fast submission

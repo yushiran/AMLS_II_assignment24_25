@@ -4,7 +4,7 @@ import random
 import seaborn as sns
 from matplotlib.patches import Rectangle
 from matplotlib import animation, rc; rc('animation', html='jshtml')
-# from ultralytics import YOLO
+from ultralytics import YOLO
 import yaml
 import json
 import os
@@ -27,7 +27,9 @@ from contextlib import nullcontext
 from concurrent.futures import ThreadPoolExecutor
 import math
 import gc
+import sys
 
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from config.config import config  # 导入全局配置
 from data import *

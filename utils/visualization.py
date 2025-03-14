@@ -247,6 +247,8 @@ def visualize_random_training_samples(num_samples=4,images_train_dir=config.YOLO
             axes[i].text(0.5, 0.5, f"Error loading image: {os.path.basename(img_path)}",
                          horizontalalignment='center', verticalalignment='center')
             axes[i].axis('off')
+        
+        axes[i].set_axis_off()
     
     # Turn off any extra subplots
     for j in range(i + 1, len(axes)):
@@ -256,7 +258,52 @@ def visualize_random_training_samples(num_samples=4,images_train_dir=config.YOLO
     plt.savefig(f"{config.OUTPUT_DIR}/motor_visualization/random_training_samples.png")
     print(f"Displayed {num_samples} random images with YOLO annotations")
 
-
+def plot_dfl_loss_curve(run_dir):
+    """
+    Plot the DFL loss curves for training and validation, marking the best model.
+    
+    Args:
+        run_dir (str): Directory where the training results are stored.
+    """
+    results_csv = os.path.join(run_dir, 'results.csv')
+    if not os.path.exists(results_csv):
+        print(f"Results file not found at {results_csv}")
+        return
+    
+    results_df = pd.read_csv(results_csv)
+    train_dfl_col = [col for col in results_df.columns if 'train/dfl_loss' in col]
+    val_dfl_col = [col for col in results_df.columns if 'val/dfl_loss' in col]
+    
+    if not train_dfl_col or not val_dfl_col:
+        print("DFL loss columns not found in results CSV")
+        print(f"Available columns: {results_df.columns.tolist()}")
+        return
+    
+    train_dfl_col = train_dfl_col[0]
+    val_dfl_col = val_dfl_col[0]
+    
+    best_epoch = results_df[val_dfl_col].idxmin()
+    best_val_loss = results_df.loc[best_epoch, val_dfl_col]
+    
+    plt.figure(figsize=(10, 6))
+    plt.plot(results_df['epoch'], results_df[train_dfl_col], label='Train DFL Loss')
+    plt.plot(results_df['epoch'], results_df[val_dfl_col], label='Validation DFL Loss')
+    plt.axvline(x=results_df.loc[best_epoch, 'epoch'], color='r', linestyle='--', 
+                label=f'Best Model (Epoch {int(results_df.loc[best_epoch, "epoch"])}, Val Loss: {best_val_loss:.4f})')
+    plt.xlabel('Epoch')
+    plt.ylabel('DFL Loss')
+    plt.title('Training and Validation DFL Loss')
+    plt.legend()
+    plt.grid(True, linestyle='--', alpha=0.7)
+    
+    plot_path = os.path.join(run_dir, 'dfl_loss_curve.png')
+    plt.savefig(plot_path)
+    # plt.savefig(os.path.join('/kaggle/working', 'dfl_loss_curve.png'))
+    
+    print(f"Loss curve saved to {plot_path}")
+    plt.close()
+    
+    return best_epoch, best_val_loss
 
 if __name__ == '__main__':
     train_labels = pd.read_csv(config.TRAIN_CSV)
