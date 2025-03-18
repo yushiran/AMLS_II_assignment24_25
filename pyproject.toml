@@ -17,6 +17,11 @@ dependencies = [
     "opencv-python>=4.8.0", # cv2
     "tqdm>=4.66.0",
     "scipy>=1.11.0",
+    "plyfile>=1.1",
+    "trimesh>=4.6.4",
+    "networkx>=3.4.2",
+    "monai>=1.4.0",
+    "nibabel>=5.3.2",
 ]
 
 [project.optional-dependencies]

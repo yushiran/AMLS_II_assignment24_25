@@ -228,12 +228,10 @@ def yolo_inference_main():
     """
     Main function to run YOLO inference on test tomograms.
     """
-    gpu_profiler.test()
     start_time = time.time()
     submission = generate_submission()
     elapsed = time.time() - start_time
     print(f"\nTotal execution time: {elapsed:.2f} seconds ({elapsed/60:.2f} minutes)")
 
 if __name__ == '__main__':
-    gpu_profiler.test()
     yolo_inference_main()

@@ -28,6 +28,8 @@ class Config:
         self.YOLO_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['yolo_model_dir'])
         self.YOLO_WEIGHTS_DIR = os.path.join(self.YOLO_MODEL_DIR, self.config['paths']['yolo_weights'])
         self.YOLO_BEST_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['yolo_best_model_dir'])
+        # SWIM模型位置
+        self.SWIN_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['swin_model_dir'])
 
         # 创建必要的目录
         dirs_to_create = [

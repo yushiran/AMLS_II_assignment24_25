@@ -7,10 +7,14 @@ paths:
   output_dir: 'outputs'
   submission_dir: 'outputs/submissions'
   model_dir: 'models'
+  # yolo dir
   yolo_dataset_dir: 'yolo_dataset'
   yolo_model_dir: 'models/yolo_v8'
   yolo_weights: 'yolo_weights'
   yolo_best_model_dir: 'models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/weights/best.pt'
+  # swin dir
+  swin_model_dir: 'models/swin'
+
 
 random_seed: 42
 
