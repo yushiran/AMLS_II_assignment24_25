@@ -1,3 +1,5 @@
+import gc
+gc.collect()
 # import plotly.express as px
 from PIL import Image, ImageDraw
 import random
@@ -32,20 +34,33 @@ import sklearn.metrics
 import shutil
 import tempfile
 import nibabel as nib
-from monai.losses import DiceLoss
-from monai.inferers import sliding_window_inference
-from monai import transforms
-from monai.transforms import (
-    AsDiscrete,
-    Activations,
-)
+import numpy as np
 from monai.config import print_config
-from monai.metrics import DiceMetric
-from monai.utils.enums import MetricReduction
-from monai.networks.nets import SwinUNETR
-from monai import data
-from monai.data import decollate_batch
-from functools import partial
+from monai.data import ArrayDataset, create_test_image_3d, decollate_batch, DataLoader
+from monai.handlers import (
+    MeanDice,
+    MLFlowHandler,
+    StatsHandler,
+    TensorBoardImageHandler,
+    TensorBoardStatsHandler,
+)
+from monai.losses import DiceLoss
+from monai.networks.nets import UNet
+from monai.transforms import (
+    Activations,
+    EnsureChannelFirst,
+    AsDiscrete,
+    Compose,
+    LoadImage,
+    RandSpatialCrop,
+    Resize,
+    ScaleIntensity,
+    EnsureType,
+)
+from monai.utils import first
+import scipy.ndimage
+import ignite
+
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 

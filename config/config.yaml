@@ -12,8 +12,9 @@ paths:
   yolo_model_dir: 'models/yolo_v8'
   yolo_weights: 'yolo_weights'
   yolo_best_model_dir: 'models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/weights/best.pt'
-  # swin dir
-  swin_model_dir: 'models/swin'
+  # 3dunet dir
+  3dunet_model_dir: 'models/3dunet'
+  3dunet_dataset_dir: '3dunet_dataset'
 
 
 random_seed: 42

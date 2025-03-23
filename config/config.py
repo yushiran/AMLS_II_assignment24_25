@@ -28,8 +28,13 @@ class Config:
         self.YOLO_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['yolo_model_dir'])
         self.YOLO_WEIGHTS_DIR = os.path.join(self.YOLO_MODEL_DIR, self.config['paths']['yolo_weights'])
         self.YOLO_BEST_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['yolo_best_model_dir'])
-        # SWIM模型位置
-        self.SWIN_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['swin_model_dir'])
+        # UNET模型位置
+        self.UNET_MODEL_DIR = os.path.join(self.BASE_DIR, self.config['paths']['3dunet_model_dir'])
+        self.UNET_DATAESET_DIR = os.path.join(self.BASE_DIR, self.config['paths']['3dunet_dataset_dir'])
+        self.UNET_IMAGES_TRAIN = os.path.join(self.UNET_DATAESET_DIR, "images", "train")
+        self.UNET_IMAGES_VAL = os.path.join(self.UNET_DATAESET_DIR, "images", "val")
+        self.UNET_LABELS_TRAIN = os.path.join(self.UNET_DATAESET_DIR, "labels", "train")
+        self.UNET_LABELS_VAL = os.path.join(self.UNET_DATAESET_DIR, "labels", "val")
 
         # 创建必要的目录
         dirs_to_create = [
