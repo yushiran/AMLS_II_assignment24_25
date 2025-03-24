@@ -14,7 +14,7 @@ paths:
   yolo_best_model_dir: 'models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/weights/best.pt'
   # 3dunet dir
   3dunet_model_dir: 'models/3dunet'
-  3dunet_dataset_dir: '3dunet_dataset'
+  3dunet_dataset_dir: '3dunet_dataset_heatmap'
 
 
 random_seed: 42
