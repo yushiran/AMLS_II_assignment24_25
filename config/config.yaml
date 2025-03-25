@@ -15,6 +15,7 @@ paths:
   # 3dunet dir
   3dunet_model_dir: 'models/3dunet'
   3dunet_dataset_dir: '3dunet_dataset_heatmap'
+  3dunet_output_dir: 'outputs/3dunet'
 
 
 random_seed: 42

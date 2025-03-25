@@ -147,28 +147,13 @@ def process_single_tomogram(tomo_id, location, shape, images_dir, labels_dir):
     del slice_images, normalized_location,heatmap, image_stack, cropped_images, cropped_heatmap
     gc.collect()
 
-def nifti_dataloader():
+def nifti_dataloader(batch_size:int = 4):
     train_transforms = Compose(
         [
-            # LoadImaged(keys=["image"]),
-            # EnsureChannelFirstd(keys=["image"]),
-            # RandSpatialCropd(keys=["image"], roi_size=(96, 96, 96), random_center=True, random_size=False),
             LoadImaged(keys=["image", "label"]),
             EnsureChannelFirstd(keys=["image", "label"]),
+            RandSpatialCropd(keys=["image","label"], roi_size=(32, 32, 32), random_center=True, random_size=False),
             Orientationd(keys=["image", "label"], axcodes="RAS"),
-            Spacingd(
-                keys=["image", "label"],
-                pixdim=(1.5, 1.5, 2.0),
-                mode=("bilinear", "nearest"),
-            ),
-            ScaleIntensityRanged(
-                keys=["image"],
-                a_min=-175,
-                a_max=250,
-                b_min=0.0,
-                b_max=1.0,
-                clip=True,
-            ),
             CropForegroundd(keys=["image", "label"], source_key="image"),
             RandFlipd(
                 keys=["image", "label"],
@@ -199,9 +184,10 @@ def nifti_dataloader():
     )
     val_transforms = Compose(
         [
-            LoadImaged(keys=["image"]),
-            EnsureChannelFirstd(keys=["image"]),
-            RandSpatialCropd(keys=["image"], roi_size=(96, 96, 96), random_center=True, random_size=False),
+            LoadImaged(keys=["image", "label"]),
+            EnsureChannelFirstd(keys=["image", "label"]),
+            RandSpatialCropd(keys=["image","label"], roi_size=(32, 32, 32), random_center=True, random_size=False),
+            Orientationd(keys=["image", "label"], axcodes="RAS"),
         ]
     )
 
@@ -214,9 +200,9 @@ def nifti_dataloader():
     cache_rate=1.0,
     num_workers=2,
     )
-    train_loader = DataLoader(train_ds, batch_size=1, shuffle=True, num_workers=2, pin_memory=True)
+    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
     val_ds = CacheDataset(data=val_files, transform=val_transforms, cache_num=2, cache_rate=1.0, num_workers=4)
-    val_loader = DataLoader(val_ds, batch_size=1, shuffle=True, num_workers=2, pin_memory=True)
+    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
 
     return train_loader, val_loader
 
@@ -235,11 +221,11 @@ def load_data_list(dataset_dir = config.UNET_DATAESET_DIR,data_list_key="train")
 
 
 def unet_train_main():
-    train_loader, val_loader = nifti_dataloader()
+    train_loader, val_loader = nifti_dataloader(batch_size = 8)
     model = UNETR(
         in_channels=1,
         out_channels=1,  # Output should be 1 channel for heatmap
-        img_size=(96, 96, 96),
+        img_size=(32, 32, 32),
         feature_size=16,
         hidden_size=768,
         mlp_dim=3072,
@@ -250,7 +236,7 @@ def unet_train_main():
         dropout_rate=0.0,
     ).to(config.DEVICE)
 
-    loss_function = DiceCELoss(to_onehot_y=True, softmax=True)
+    loss_function = DiceCELoss(to_onehot_y=False, sigmoid=True)
     torch.backends.cudnn.benchmark = True
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
 
@@ -258,9 +244,8 @@ def unet_train_main():
         model.eval()
         with torch.no_grad():
             for batch in epoch_iterator_val:
-                val_inputs, val_labels = (batch["image"].cuda(), batch["label"].cuda())
-                val_labels = torch.stack([torch.tensor(generate_heatmap(val_inputs.shape, coords)).cuda() for coords in val_labels])
-                val_outputs = sliding_window_inference(val_inputs, (96, 96, 96), 4, model)
+                val_inputs, val_labels = (batch["image"].to(config.DEVICE), batch["label"].to(config.DEVICE))
+                val_outputs = sliding_window_inference(val_inputs, (32, 32, 32), 4, model)
                 val_labels_list = decollate_batch(val_labels)
                 val_labels_convert = [post_label(val_label_tensor) for val_label_tensor in val_labels_list]
                 val_outputs_list = decollate_batch(val_outputs)
@@ -278,8 +263,8 @@ def unet_train_main():
         epoch_iterator = tqdm(train_loader, desc="Training (X / X Steps) (loss=X.X)", dynamic_ncols=True)
         for step, batch in enumerate(epoch_iterator):
             step += 1
-            x = batch["image"].cuda()
-            y = batch["label"].cuda()
+            x = batch["image"].to(config.DEVICE)
+            y = batch["label"].to(config.DEVICE)
 
             logit_map = model(x)
             loss = loss_function(logit_map, y)
@@ -309,13 +294,15 @@ def unet_train_main():
                             dice_val_best, dice_val
                         )
                     )
+                np.savetxt(os.path.join(config.UNET_MODEL_DIR, "epoch_loss_values.txt"), epoch_loss_values)
+                np.savetxt(os.path.join(config.UNET_MODEL_DIR, "metric_values.txt"), metric_values)
             global_step += 1
         return global_step, dice_val_best, global_step_best
     
     max_iterations = 25000
     eval_num = 500
-    post_label = AsDiscrete(to_onehot=14)
-    post_pred = AsDiscrete(argmax=True, to_onehot=14)
+    post_label = AsDiscrete(threshold=0.5)
+    post_pred = AsDiscrete(threshold=0.5)
     dice_metric = DiceMetric(include_background=True, reduction="mean", get_not_nans=False)
     global_step = 0
     dice_val_best = 0.0
@@ -325,7 +312,46 @@ def unet_train_main():
     while global_step < max_iterations:
         global_step, dice_val_best, global_step_best = train(global_step, train_loader, dice_val_best, global_step_best)
 
+def unet_infer_main():
+    model = UNETR(
+    in_channels=1,
+    out_channels=1,
+    img_size=(96, 96, 96),
+    feature_size=16,
+    hidden_size=768,
+    mlp_dim=3072,
+    num_heads=12,
+    proj_type="perceptron",
+    norm_name="instance",
+    res_block=True,
+    dropout_rate=0.0,
+    ).to(config.DEVICE)
+    _, val_loader = nifti_dataloader(batch_size = 1)
+
+    model.load_state_dict(torch.load(os.path.join(config.UNET_MODEL_DIR, "best_metric_model.pth"), weights_only=True))
+    model.eval()
+       
+    with torch.no_grad():
+        for i, batch in enumerate(val_loader):
+            if i == 1:
+                val_inputs = batch["image"].to(config.DEVICE)
+                val_labels = batch["label"].to(config.DEVICE)
+                # print(img.shape)
+                # print(label.shape)
+                # val_inputs = torch.unsqueeze(img, 1).to(config.DEVICE)
+                # val_labels = torch.unsqueeze(label, 1).to(config.DEVICE)
+                val_outputs = sliding_window_inference(val_inputs, (96, 96, 96), 4, model, overlap=0.8)
+                val_inputs = val_inputs.squeeze(0).squeeze(0)
+                val_labels = val_labels.squeeze(0).squeeze(0)
+                val_outputs = val_outputs.squeeze(0).squeeze(0)
+                print(val_inputs.shape, val_labels.shape, val_outputs.shape)
+                nib.save(nib.Nifti1Image(val_inputs.cpu().numpy(), np.eye(4)), os.path.join(config.UNET_OUTPUT_DIR, "val_inputs.nii.gz"))
+                nib.save(nib.Nifti1Image(val_labels.cpu().numpy(), np.eye(4)), os.path.join(config.UNET_OUTPUT_DIR, "val_labels.nii.gz"))
+                nib.save(nib.Nifti1Image(val_outputs.cpu().numpy(), np.eye(4)), os.path.join(config.UNET_OUTPUT_DIR, "val_outputs.nii.gz"))
+                break
+
+
 if __name__ == "__main__":
-    import_dataset()
-    # nifti_dataloader()
-    # unet_train_main()
+    # import_dataset()
+    unet_train_main()
+    unet_infer_main()

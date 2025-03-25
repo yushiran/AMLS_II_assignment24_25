@@ -35,6 +35,7 @@ class Config:
         self.UNET_IMAGES_VAL = os.path.join(self.UNET_DATAESET_DIR, "images", "val")
         self.UNET_LABELS_TRAIN = os.path.join(self.UNET_DATAESET_DIR, "labels", "train")
         self.UNET_LABELS_VAL = os.path.join(self.UNET_DATAESET_DIR, "labels", "val")
+        self.UNET_OUTPUT_DIR = os.path.join(self.BASE_DIR, self.config['paths']['3dunet_output_dir'])
 
         # 创建必要的目录
         dirs_to_create = [
@@ -47,7 +48,14 @@ class Config:
             self.YOLO_LABELS_VAL,
             self.YOLO_MODEL_DIR,
             self.YOLO_WEIGHTS_DIR,
-            self.SUBMISSION_DIR
+            self.SUBMISSION_DIR,
+            self.UNET_MODEL_DIR,
+            self.UNET_DATAESET_DIR,
+            self.UNET_IMAGES_TRAIN,
+            self.UNET_IMAGES_VAL,
+            self.UNET_LABELS_TRAIN,
+            self.UNET_LABELS_VAL,
+            self.UNET_OUTPUT_DIR,
         ]
         for directory in dirs_to_create:
             os.makedirs(directory, exist_ok=True)
