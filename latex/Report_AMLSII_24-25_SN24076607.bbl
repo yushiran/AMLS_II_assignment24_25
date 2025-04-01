@@ -1,0 +1,66 @@
+\begin{thebibliography}{1}
+
+\bibitem{byu-locating-bacterial-flagellar-motors-2025}
+Andrew Darley, Braxton Owens, Bryan Morse, Eben Lonsdale, Gus Hart, Jackson
+  Pond, Joshua Blaser, Matias~Gomez Paz, Matthew Ward, Rachel Webb, Andrew
+  Crowther, Nathan Smith, Grant~J. Jensen, TJ~Hart, Maggie Demkin, Walter
+  Reade, and Elizabeth Park,
+\newblock ``Byu - locating bacterial flagellar motors 2025,''
+  \url{https://kaggle.com/competitions/byu-locating-bacterial-flagellar-motors-2025},
+  2025,
+\newblock Kaggle.
+
+\bibitem{beckSnapshotsNuclearPore2007}
+Martin Beck, Vladan Lucić, Friedrich Förster, Wolfgang Baumeister, and Ohad
+  Medalia,
+\newblock ``Snapshots of nuclear pore complexes in action captured by
+  cryo-electron tomography,''
+\newblock vol. 449, no. 7162, pp. 611--615.
+
+\bibitem{jeonInternationalReviewCytology2004}
+Kwang~W. Jeon,
+\newblock {\em International {{Review}} of {{Cytology}}: {{A Survey}} of {{Cell
+  Biology}}},
+\newblock Elsevier.
+
+\bibitem{kojimaBacterialFlagellarMotor2004}
+Seiji Kojima and David~F. Blair,
+\newblock ``The bacterial flagellar motor: Structure and function of a complex
+  molecular machine,''
+\newblock vol. 233, pp. 93--134.
+
+\bibitem{lucicCryoelectronTomographyChallenge2013}
+Vladan Lučič, Alexander Rigort, and Wolfgang Baumeister,
+\newblock ``Cryo-electron tomography: The challenge of doing structural biology
+  in situ,''
+\newblock vol. 202, no. 3, pp. 407--419.
+
+\bibitem{jocherUltralyticsYolov5V702022}
+Glenn Jocher, Ayush Chaurasia, Alex Stoken, Jirka Borovec, NanoCode012, Yonghye
+  Kwon, Kalen Michael, TaoXie, Jiacong Fang, {imyhxy}, Lorna, 曾逸夫(Zeng
+  Yifu), Colin Wong, Abhiram V, Diego Montes, Zhiqiang Wang, Cristi Fati,
+  Jebastin Nadar, Laughing, UnglvKitDe, Victor Sonck, {tkianai}, {yxNONG},
+  Piotr Skalski, Adam Hogan, Dhruv Nair, Max Strobel, and Mrinal Jain,
+\newblock ``Ultralytics/yolov5: V7.0 - {{YOLOv5 SOTA Realtime Instance
+  Segmentation}},'' .
+
+\bibitem{hatamizadehSwinUNETRSwin2022}
+Ali Hatamizadeh, Vishwesh Nath, Yucheng Tang, Dong Yang, Holger~R. Roth, and
+  Daguang Xu,
+\newblock ``Swin {{UNETR}}: {{Swin Transformers}} for~{{Semantic Segmentation}}
+  of~{{Brain Tumors}} in~{{MRI Images}},''
+\newblock in {\em Brainlesion: {{Glioma}}, {{Multiple Sclerosis}}, {{Stroke}}
+  and {{Traumatic Brain Injuries}}}, Alessandro Crimi and Spyridon Bakas, Eds.
+  pp. 272--284, Springer International Publishing.
+
+\bibitem{cicek3DUNetLearning2016}
+Özgün Çiçek, Ahmed Abdulkadir, Soeren~S. Lienkamp, Thomas Brox, and Olaf
+  Ronneberger,
+\newblock ``{{3D U-Net}}: {{Learning Dense Volumetric Segmentation}} from
+  {{Sparse Annotation}},''
+\newblock in {\em Medical {{Image Computing}} and {{Computer-Assisted
+  Intervention}} – {{MICCAI}} 2016}, Sebastien Ourselin, Leo Joskowicz,
+  Mert~R. Sabuncu, Gozde Unal, and William Wells, Eds. pp. 424--432, Springer
+  International Publishing.
+
+\end{thebibliography}
