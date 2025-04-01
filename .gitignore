@@ -175,3 +175,5 @@ yolo_dataset/
 models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/
 3dunet_dataset/
 3dunet_dataset_heatmap/
+outputs/3dunet/
+models/3dunet/best_metric_model.pth

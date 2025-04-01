@@ -236,27 +236,27 @@ def unet_train_main():
         dropout_rate=0.0,
     ).to(config.DEVICE)
 
-    loss_function = DiceCELoss(to_onehot_y=False, sigmoid=True)
+    loss_function = torch.nn.MSELoss()
     torch.backends.cudnn.benchmark = True
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
 
     def validation(epoch_iterator_val):
         model.eval()
+        total_mse = 0.0
+        count = 0
         with torch.no_grad():
             for batch in epoch_iterator_val:
-                val_inputs, val_labels = (batch["image"].to(config.DEVICE), batch["label"].to(config.DEVICE))
+                val_inputs, val_labels = batch["image"].to(config.DEVICE), batch["label"].to(config.DEVICE)
                 val_outputs = sliding_window_inference(val_inputs, (32, 32, 32), 4, model)
-                val_labels_list = decollate_batch(val_labels)
-                val_labels_convert = [post_label(val_label_tensor) for val_label_tensor in val_labels_list]
-                val_outputs_list = decollate_batch(val_outputs)
-                val_output_convert = [post_pred(val_pred_tensor) for val_pred_tensor in val_outputs_list]
-                dice_metric(y_pred=val_output_convert, y=val_labels_convert)
-                epoch_iterator_val.set_description("Validate (%d / %d Steps)" % (global_step, 10.0))  # noqa: B038
-            mean_dice_val = dice_metric.aggregate().item()
-            dice_metric.reset()
-        return mean_dice_val
+                # 直接计算MSE，不做threshold操作
+                batch_mse = loss_function(val_outputs, val_labels).item()
+                total_mse += batch_mse
+                count += 1
+                epoch_iterator_val.set_description(f"Validate (MSE={batch_mse:.4f})")
+        mean_mse_val = total_mse / max(count, 1)
+        return mean_mse_val
 
-    def train(global_step, train_loader, dice_val_best, global_step_best):
+    def train(global_step, train_loader, loss_val_best, global_step_best):
         model.train()
         epoch_loss = 0
         step = 0
@@ -273,50 +273,52 @@ def unet_train_main():
             optimizer.step()
             optimizer.zero_grad()
             epoch_iterator.set_description(  # noqa: B038
-                "Training (%d / %d Steps) (loss=%2.5f)" % (global_step, max_iterations, loss)
+                "Training (%d / %d Steps) (loss=%2.9f)" % (global_step, max_iterations, loss)
             )
             if (global_step % eval_num == 0 and global_step != 0) or global_step == max_iterations:
                 epoch_iterator_val = tqdm(val_loader, desc="Validate (X / X Steps) (dice=X.X)", dynamic_ncols=True)
-                dice_val = validation(epoch_iterator_val)
+                loss_val = validation(epoch_iterator_val)
                 epoch_loss /= step
                 epoch_loss_values.append(epoch_loss)
-                metric_values.append(dice_val)
-                if dice_val > dice_val_best:
-                    dice_val_best = dice_val
+                metric_values.append(loss_val)
+                print('loss_val',loss_val)
+                if loss_val < loss_val_best:
+                    loss_val_best = loss_val
                     global_step_best = global_step
                     torch.save(model.state_dict(), os.path.join(config.UNET_MODEL_DIR, "best_metric_model.pth"))
                     print(
-                        "Model Was Saved ! Current Best Avg. Dice: {} Current Avg. Dice: {}".format(dice_val_best, dice_val)
+                        "Model Was Saved ! Current Best Avg. loss: {} Current Avg. loss: {}".format(loss_val_best, loss_val)
                     )
                 else:
                     print(
-                        "Model Was Not Saved ! Current Best Avg. Dice: {} Current Avg. Dice: {}".format(
-                            dice_val_best, dice_val
+                        "Model Was Not Saved ! Current Best Avg. loss: {} Current Avg. loss: {}".format(
+                            loss_val_best, loss_val
                         )
                     )
                 np.savetxt(os.path.join(config.UNET_MODEL_DIR, "epoch_loss_values.txt"), epoch_loss_values)
                 np.savetxt(os.path.join(config.UNET_MODEL_DIR, "metric_values.txt"), metric_values)
             global_step += 1
-        return global_step, dice_val_best, global_step_best
+        return global_step, loss_val_best, global_step_best
     
     max_iterations = 25000
     eval_num = 500
-    post_label = AsDiscrete(threshold=0.5)
-    post_pred = AsDiscrete(threshold=0.5)
-    dice_metric = DiceMetric(include_background=True, reduction="mean", get_not_nans=False)
+    # post_label = AsDiscrete(threshold=0.5)
+    # post_pred = AsDiscrete(threshold=0.5)
+    # dice_metric = DiceMetric(include_background=True, reduction="mean", get_not_nans=False)
     global_step = 0
-    dice_val_best = 0.0
+    # dice_val_best = 0.0
+    loss_val_best = 9999
     global_step_best = 0
     epoch_loss_values = []
     metric_values = []
     while global_step < max_iterations:
-        global_step, dice_val_best, global_step_best = train(global_step, train_loader, dice_val_best, global_step_best)
+        global_step, loss_val_best, global_step_best = train(global_step, train_loader, loss_val_best, global_step_best)
 
 def unet_infer_main():
     model = UNETR(
     in_channels=1,
     out_channels=1,
-    img_size=(96, 96, 96),
+    img_size=(32, 32, 32),
     feature_size=16,
     hidden_size=768,
     mlp_dim=3072,
@@ -326,32 +328,41 @@ def unet_infer_main():
     res_block=True,
     dropout_rate=0.0,
     ).to(config.DEVICE)
-    _, val_loader = nifti_dataloader(batch_size = 1)
+    # _, val_loader = nifti_dataloader(batch_size = 1)
 
     model.load_state_dict(torch.load(os.path.join(config.UNET_MODEL_DIR, "best_metric_model.pth"), weights_only=True))
     model.eval()
        
-    with torch.no_grad():
-        for i, batch in enumerate(val_loader):
-            if i == 1:
-                val_inputs = batch["image"].to(config.DEVICE)
-                val_labels = batch["label"].to(config.DEVICE)
-                # print(img.shape)
-                # print(label.shape)
-                # val_inputs = torch.unsqueeze(img, 1).to(config.DEVICE)
-                # val_labels = torch.unsqueeze(label, 1).to(config.DEVICE)
-                val_outputs = sliding_window_inference(val_inputs, (96, 96, 96), 4, model, overlap=0.8)
-                val_inputs = val_inputs.squeeze(0).squeeze(0)
-                val_labels = val_labels.squeeze(0).squeeze(0)
-                val_outputs = val_outputs.squeeze(0).squeeze(0)
-                print(val_inputs.shape, val_labels.shape, val_outputs.shape)
-                nib.save(nib.Nifti1Image(val_inputs.cpu().numpy(), np.eye(4)), os.path.join(config.UNET_OUTPUT_DIR, "val_inputs.nii.gz"))
-                nib.save(nib.Nifti1Image(val_labels.cpu().numpy(), np.eye(4)), os.path.join(config.UNET_OUTPUT_DIR, "val_labels.nii.gz"))
-                nib.save(nib.Nifti1Image(val_outputs.cpu().numpy(), np.eye(4)), os.path.join(config.UNET_OUTPUT_DIR, "val_outputs.nii.gz"))
-                break
+    # 读取NIfTI
+    volume = nib.load('/home/yushiran/BYU_Locating_Bacterial_Flagellar_Motors_2025/3dunet_dataset/images/train/tomo_0de3ee.nii.gz').get_fdata().astype(np.float32)
+    # 扩展成 [B, C, D, H, W]
+    volume_tensor = torch.from_numpy(volume[None, None]).to(config.DEVICE)
 
+    # 用sliding_window_inference自动切分并重拼
+    with torch.no_grad():
+        pred = sliding_window_inference(
+            volume_tensor, (32, 32, 32), 16, model, overlap=0.1
+        )
+    # 存为NIfTI
+    result = pred.squeeze(0).squeeze(0).cpu().numpy()
+
+    # 局部极大值检测，min_distance表示峰之间的最小距离，可以调整
+    peaks = peak_local_max(result, min_distance=30, threshold_abs=0.009)
+
+    if peaks.size == 0:
+        print("No motor locations found (no local maxima).")
+    else:
+        print(f"Found {len(peaks)} potential motor locations (z, x, y):")
+        for coord in peaks:
+            print(coord)
+
+    # 保存预测图
+    nib.save(
+        nib.Nifti1Image(result.astype(np.float32), np.eye(4)),
+        os.path.join(config.UNET_OUTPUT_DIR, "val_outputs.nii")
+    )
 
 if __name__ == "__main__":
     # import_dataset()
-    unet_train_main()
+    # unet_train_main()
     unet_infer_main()
