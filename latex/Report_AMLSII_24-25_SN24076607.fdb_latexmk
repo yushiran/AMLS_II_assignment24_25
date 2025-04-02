@@ -1,17 +1,17 @@
 # Fdb version 3
-["bibtex Report_AMLSII_24-25_SN24076607"] 1743522532 "Report_AMLSII_24-25_SN24076607.aux" "Report_AMLSII_24-25_SN24076607.bbl" "Report_AMLSII_24-25_SN24076607" 1743522623
+["bibtex Report_AMLSII_24-25_SN24076607"] 1743634751 "Report_AMLSII_24-25_SN24076607.aux" "Report_AMLSII_24-25_SN24076607.bbl" "Report_AMLSII_24-25_SN24076607" 1743634752
   "./IEEEbib.bst" 1743518449 17903 9ff833f4bf67f47893e44ee17b52d211 ""
-  "Report_AMLSII_24-25_SN24076607.aux" 1743522623 3907 7dd2596a52aa30ee4fd9fd35dc9f1dc1 "xelatex"
-  "refs.bib" 1743522527 47221 dd11369bd059826e9bdd53789ce84c13 ""
+  "Report_AMLSII_24-25_SN24076607.aux" 1743634751 8301 ca315eb0754ef3bd9c14848ac724554e "xelatex"
+  "refs.bib" 1743606162 21000 11966be1aab38c8ddb01eba0c9571669 ""
   (generated)
   "Report_AMLSII_24-25_SN24076607.bbl"
   "Report_AMLSII_24-25_SN24076607.blg"
-["xdvipdfmx"] 1743522623 "Report_AMLSII_24-25_SN24076607.xdv" "Report_AMLSII_24-25_SN24076607.pdf" "Report_AMLSII_24-25_SN24076607" 1743522623
-  "Report_AMLSII_24-25_SN24076607.xdv" 1743522623 102164 d56433a980bd17432113c461503a6ad3 "xelatex"
+["xdvipdfmx"] 1743634751 "Report_AMLSII_24-25_SN24076607.xdv" "Report_AMLSII_24-25_SN24076607.pdf" "Report_AMLSII_24-25_SN24076607" 1743634752
+  "Report_AMLSII_24-25_SN24076607.xdv" 1743634751 278068 1add5299220922f0bb78e84694007c58 "xelatex"
   (generated)
   "Report_AMLSII_24-25_SN24076607.pdf"
-["xelatex"] 1743522622 "Report_AMLSII_24-25_SN24076607.tex" "Report_AMLSII_24-25_SN24076607.xdv" "Report_AMLSII_24-25_SN24076607" 1743522623
-  "/etc/texmf/web2c/texmf.cnf" 1743519186 475 c0e671620eb5563b2130f56340a5fde8 ""
+["xelatex"] 1743634751 "Report_AMLSII_24-25_SN24076607.tex" "Report_AMLSII_24-25_SN24076607.xdv" "Report_AMLSII_24-25_SN24076607" 1743634752
+  "/etc/texmf/web2c/texmf.cnf" 1743592675 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -75,12 +75,19 @@
   "/usr/share/texlive/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
-  "/var/lib/texmf/web2c/xetex/xelatex.fmt" 1743520234 3606619 7dad1cba6b9cbf7b61ba632b4ef221ef ""
-  "Report_AMLSII_24-25_SN24076607.aux" 1743522623 3907 7dd2596a52aa30ee4fd9fd35dc9f1dc1 "xelatex"
-  "Report_AMLSII_24-25_SN24076607.bbl" 1743522532 2893 234e24a636f091a17b6aeb7fd176c217 "bibtex Report_AMLSII_24-25_SN24076607"
-  "Report_AMLSII_24-25_SN24076607.out" 1743522623 1824 888fb345cddac4cfb66157dfc137577d "xelatex"
-  "Report_AMLSII_24-25_SN24076607.tex" 1743522622 9473 8ec7b102980861bce99b005bb0166df6 ""
-  "images/Roberts_building.jpg" 1743518449 378207 816169b0d0a76c8793333c8b603ab08b ""
+  "/var/lib/texmf/web2c/xetex/xelatex.fmt" 1743593354 3606611 62a073302f371eaada4e2cb87fef5131 ""
+  "Report_AMLSII_24-25_SN24076607.aux" 1743634751 8301 ca315eb0754ef3bd9c14848ac724554e "xelatex"
+  "Report_AMLSII_24-25_SN24076607.bbl" 1743634751 5583 ec8f4ffdee71ec73d3cddb825c5d27aa "bibtex Report_AMLSII_24-25_SN24076607"
+  "Report_AMLSII_24-25_SN24076607.out" 1743634751 3682 76ffc77f1a2ce33bbfcacea892d36901 "xelatex"
+  "Report_AMLSII_24-25_SN24076607.tex" 1743634750 28804 1d3a1b0fc4893904ea6b6e7c472ca425 ""
+  "images/Overview of the Swin UNETR architecture.pdf" 1743605857 216872 eacc3171f41c60931cd04fa92da18af2 ""
+  "images/Process of Object Detection.jpg" 1743597424 41393 75505aa900e5d2e593f2439ce862957a ""
+  "images/Variations of FPN architectures in YOLOv8.jpg" 1743598789 55516 47c7b68c0c44ae9d5b5e9f1f91239036 ""
+  "images/correlation_heatmap.png" 1743633785 86671 09a04c29fcc395cf130af2cf9a25a255 ""
+  "images/feature_distributions.png" 1743633341 63769 b8d2a4344915a47dd0f8a3c1a1a91bd5 ""
+  "images/random_training_samples.png" 1743632359 1642165 f96186d279e7333f6156e9ba670a1198 ""
+  "images/results.png" 1743634654 278553 9f0e012367a446879175251abe14177c ""
+  "images/shifted windowing mechanism.pdf" 1743605919 2398505 69d9e16a3ecce4b20946c1d3cc99dc02 ""
   "spconf.sty" 1743518449 8798 121ab5e33850ab4cf48fc2795d92b250 ""
   (generated)
   "Report_AMLSII_24-25_SN24076607.aux"

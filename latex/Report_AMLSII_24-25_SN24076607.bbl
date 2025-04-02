@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{byu-locating-bacterial-flagellar-motors-2025}
 Andrew Darley, Braxton Owens, Bryan Morse, Eben Lonsdale, Gus Hart, Jackson
@@ -11,29 +11,30 @@ Andrew Darley, Braxton Owens, Bryan Morse, Eben Lonsdale, Gus Hart, Jackson
 \newblock Kaggle.
 
 \bibitem{beckSnapshotsNuclearPore2007}
-Martin Beck, Vladan Lucić, Friedrich Förster, Wolfgang Baumeister, and Ohad
-  Medalia,
+Martin Beck, Vladan Luci{\'c}, Friedrich F{\"o}rster, Wolfgang Baumeister, and
+  Ohad Medalia,
 \newblock ``Snapshots of nuclear pore complexes in action captured by
   cryo-electron tomography,''
-\newblock vol. 449, no. 7162, pp. 611--615.
+\newblock {\em Nature}, vol. 449, no. 7162, pp. 611--615, Oct. 2007.
 
 \bibitem{jeonInternationalReviewCytology2004}
 Kwang~W. Jeon,
 \newblock {\em International {{Review}} of {{Cytology}}: {{A Survey}} of {{Cell
   Biology}}},
-\newblock Elsevier.
+\newblock Elsevier, June 2004.
 
 \bibitem{kojimaBacterialFlagellarMotor2004}
 Seiji Kojima and David~F. Blair,
 \newblock ``The bacterial flagellar motor: Structure and function of a complex
   molecular machine,''
-\newblock vol. 233, pp. 93--134.
+\newblock {\em International Review of Cytology}, vol. 233, pp. 93--134, 2004.
 
 \bibitem{lucicCryoelectronTomographyChallenge2013}
-Vladan Lučič, Alexander Rigort, and Wolfgang Baumeister,
+Vladan Lu{\v c}i{\v c}, Alexander Rigort, and Wolfgang Baumeister,
 \newblock ``Cryo-electron tomography: The challenge of doing structural biology
   in situ,''
-\newblock vol. 202, no. 3, pp. 407--419.
+\newblock {\em The Journal of Cell Biology}, vol. 202, no. 3, pp. 407--419,
+  Aug. 2013.
 
 \bibitem{jocherUltralyticsYolov5V702022}
 Glenn Jocher, Ayush Chaurasia, Alex Stoken, Jirka Borovec, NanoCode012, Yonghye
@@ -42,25 +43,86 @@ Glenn Jocher, Ayush Chaurasia, Alex Stoken, Jirka Borovec, NanoCode012, Yonghye
   Jebastin Nadar, Laughing, UnglvKitDe, Victor Sonck, {tkianai}, {yxNONG},
   Piotr Skalski, Adam Hogan, Dhruv Nair, Max Strobel, and Mrinal Jain,
 \newblock ``Ultralytics/yolov5: V7.0 - {{YOLOv5 SOTA Realtime Instance
-  Segmentation}},'' .
-
-\bibitem{hatamizadehSwinUNETRSwin2022}
-Ali Hatamizadeh, Vishwesh Nath, Yucheng Tang, Dong Yang, Holger~R. Roth, and
-  Daguang Xu,
-\newblock ``Swin {{UNETR}}: {{Swin Transformers}} for~{{Semantic Segmentation}}
-  of~{{Brain Tumors}} in~{{MRI Images}},''
-\newblock in {\em Brainlesion: {{Glioma}}, {{Multiple Sclerosis}}, {{Stroke}}
-  and {{Traumatic Brain Injuries}}}, Alessandro Crimi and Spyridon Bakas, Eds.
-  pp. 272--284, Springer International Publishing.
+  Segmentation}},'' Nov. 2022.
 
 \bibitem{cicek3DUNetLearning2016}
-Özgün Çiçek, Ahmed Abdulkadir, Soeren~S. Lienkamp, Thomas Brox, and Olaf
-  Ronneberger,
+{\"O}zg{\"u}n {\c C}i{\c c}ek, Ahmed Abdulkadir, Soeren~S. Lienkamp, Thomas
+  Brox, and Olaf Ronneberger,
 \newblock ``{{3D U-Net}}: {{Learning Dense Volumetric Segmentation}} from
   {{Sparse Annotation}},''
 \newblock in {\em Medical {{Image Computing}} and {{Computer-Assisted
-  Intervention}} – {{MICCAI}} 2016}, Sebastien Ourselin, Leo Joskowicz,
-  Mert~R. Sabuncu, Gozde Unal, and William Wells, Eds. pp. 424--432, Springer
-  International Publishing.
+  Intervention}} -- {{MICCAI}} 2016}, Sebastien Ourselin, Leo Joskowicz,
+  Mert~R. Sabuncu, Gozde Unal, and William Wells, Eds., Cham, 2016, pp.
+  424--432, Springer International Publishing.
+
+\bibitem{yaseenWhatYOLOv8InDepth2024}
+Muhammad Yaseen,
+\newblock ``What is {{YOLOv8}}: {{An In-Depth Exploration}} of the {{Internal
+  Features}} of the {{Next-Generation Object Detector}},'' Aug. 2024.
+
+\bibitem{liuSwinTransformerHierarchical2021}
+Ze~Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, and
+  Baining Guo,
+\newblock ``Swin {{Transformer}}: {{Hierarchical Vision Transformer}} using
+  {{Shifted Windows}},'' Aug. 2021.
+
+\bibitem{chenConvolutionalNeuralNetworks2017}
+Muyuan Chen, Wei Dai, Stella~Y. Sun, Darius Jonasch, Cynthia~Y. He, Michael~F.
+  Schmid, Wah Chiu, and Steven~J. Ludtke,
+\newblock ``Convolutional {{Neural Networks}} for {{Automated Annotation}} of
+  {{Cellular Cryo-Electron Tomograms}},''
+\newblock {\em Nature methods}, vol. 14, no. 10, pp. 983--985, Oct. 2017.
+
+\bibitem{wangCSPNetNewBackbone2019}
+Chien-Yao Wang, Hong-Yuan~Mark Liao, I.-Hau Yeh, Yueh-Hua Wu, Ping-Yang Chen,
+  and Jun-Wei Hsieh,
+\newblock ``{{CSPNet}}: {{A New Backbone}} that can {{Enhance Learning
+  Capability}} of {{CNN}},'' Nov. 2019.
+
+\bibitem{bochkovskiyYOLOv4OptimalSpeed2020a}
+Alexey Bochkovskiy, Chien-Yao Wang, and H.~Liao,
+\newblock ``{{YOLOv4}}: {{Optimal Speed}} and {{Accuracy}} of {{Object
+  Detection}},''
+\newblock {\em ArXiv}, Apr. 2020.
+
+\bibitem{Lin2016FeaturePN}
+Tsung-Yi Lin, Piotr Doll{\'a}r, Ross~B. Girshick, Kaiming He, Bharath
+  Hariharan, and Serge~J. Belongie,
+\newblock ``Feature pyramid networks for object detection,''
+\newblock {\em 2017 IEEE Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, pp. 936--944, 2016.
+
+\bibitem{Liu2018PathAN}
+Shu Liu, Lu~Qi, Haifang Qin, Jianping Shi, and Jiaya Jia,
+\newblock ``Path aggregation network for instance segmentation,''
+\newblock {\em 2018 IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition}, pp. 8759--8768, 2018.
+
+\bibitem{Rezatofighi2019GeneralizedIO}
+Seyed~Hamid Rezatofighi, Nathan Tsoi, JunYoung Gwak, Amir Sadeghian, Ian~D.
+  Reid, and Silvio Savarese,
+\newblock ``Generalized intersection over union: A metric and a loss for
+  bounding box regression,''
+\newblock {\em 2019 IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, pp. 658--666, 2019.
+
+\bibitem{Hatamizadeh2022SwinUS}
+Ali Hatamizadeh, V.~Nath, Yucheng Tang, Dong Yang, Holger~R. Roth, and Daguang
+  Xu,
+\newblock ``Swin unetr: Swin transformers for semantic segmentation of brain
+  tumors in mri images,''
+\newblock {\em ArXiv}, vol. abs/2201.01266, 2022.
+
+\bibitem{Vaswani2017AttentionIA}
+Ashish Vaswani, Noam~M. Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N. Gomez, Lukasz Kaiser, and Illia Polosukhin,
+\newblock ``Attention is all you need,''
+\newblock in {\em Neural Information Processing Systems}, 2017.
+
+\bibitem{Ulyanov2016InstanceNT}
+Dmitry Ulyanov, Andrea Vedaldi, and Victor~S. Lempitsky,
+\newblock ``Instance normalization: The missing ingredient for fast
+  stylization,''
+\newblock {\em ArXiv}, vol. abs/1607.08022, 2016.
 
 \end{thebibliography}

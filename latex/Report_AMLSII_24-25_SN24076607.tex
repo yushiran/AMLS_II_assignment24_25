@@ -20,7 +20,7 @@
     \label{sec:abs}
     This report presents a novel approach to automatically detect bacterial flagellar motors in cryogenic electron tomography (cryo-ET) data, exploring two complementary deep learning methods. 
     Flagellar motors, crucial molecular machines enabling bacterial motility and pathogenesis, are traditionally identified through manual labor-intensive processes in 3D tomograms. 
-    Based on the BYU Locating Bacterial Flagellar Motors 2025 competition \cite{byu-locating-bacterial-flagellar-motors-2025}, we developed two distinct approaches: YOLOv8 for 2D detection processing tomographic slice projections, and 3D UNet for full volumetric segmentation and localization. This exploration tackles the inherent difficulties of low signal-to-noise ratio, variable motor orientations, and crowded intracellular environments typical in cryo-ET data. 
+    Based on the BYU Locating Bacterial Flagellar Motors 2025 competition \cite{byu-locating-bacterial-flagellar-motors-2025}\footnote{This competition can be found on: \url{https://www.kaggle.com/competitions/byu-locating-bacterial-flagellar-motors-2025/overview}}, we developed two distinct approaches: YOLOv8 for 2D detection processing tomographic slice projections, and 3D UNet for full volumetric segmentation and localization. This exploration tackles the inherent difficulties of low signal-to-noise ratio, variable motor orientations, and crowded intracellular environments typical in cryo-ET data. 
     Each method offers different advantages—YOLOv8 provides rapid processing of 2D data while 3D UNet captures the full spatial context in three dimensions. Experimental results demonstrate the relative strengths of each method, with the 2D approach achieving faster processing times and the 3D approach providing more precise spatial localization. The best-performing model achieved an F2-score of 0.87 with average location error below 500 Angstroms on the test dataset.
     This automated system significantly reduces analysis time from hours to minutes per tomogram while maintaining expert-level accuracy, potentially accelerating research in molecular biology, drug development, and synthetic biology by removing the human-in-the-loop bottleneck in cryo-ET studies.
     \footnote{The code is provided in GitHub: \url{https://github.com/yushiran/AMLS_II_assignment24_25.git}}
@@ -52,72 +52,350 @@ In the following sections, we present a literature survey of relevant techniques
 
 \section{Literature survey}
 \label{sec:lite}
-    This section should focus on an overview of potential approaches to solve the tasks. You can introduce some classical and state-of-the-art machine learning algorithms.
+    YOLOv8, developed by Ultralytics, represents a significant advancement in real-time object detection, transforming detection from multi-stage pipelines to single network predictions\cite{jocherUltralyticsYolov5V702022}. With its efficient backbone, optimized feature fusion, and decoupled head design separating classification and localization tasks, YOLOv8 offers an ideal balance of speed and accuracy for processing numerous tomographic slices in our 2D approach to motor detection\cite{yaseenWhatYOLOv8InDepth2024}.
 
+    The 3D U-Net architecture, proposed by Çiçek et al. \cite{cicek3DUNetLearning2016}, extends the original U-Net design to volumetric data by replacing 2D operations with their 3D counterparts. This modification enables the model to leverage full spatial context across all dimensions—crucial for analyzing tomographic volumes where structures exist in three dimensions. Its characteristic encoding-decoding paths connected by skip connections effectively combine semantic information with high-resolution features, making it particularly suitable for cryo-ET analysis where precise boundary delineation is critical.
+
+    Swin Transformer introduces a hierarchical vision transformer with shifted windows, addressing computational efficiency limitations while maintaining the ability to model long-range dependencies \cite{liuSwinTransformerHierarchical2021}. By computing self-attention within local windows while allowing for cross-window connections, this architecture efficiently captures both local and global relationships—an important capability when analyzing structural features in crowded cellular environments typical of cryo-ET data.
+
+    Deep learning applications to cryo-ET analysis have shown promising results despite challenges including extremely low signal-to-noise ratios and missing wedge artifacts. Recent work has demonstrated that convolutional neural networks can effectively detect macromolecular complexes in cellular tomograms, outperforming traditional template matching methods\cite{chenConvolutionalNeuralNetworks2017}. Specialized preprocessing techniques, including denoising and contrast enhancement, have proven crucial for improving downstream analysis tasks in this challenging imaging modality.
 
 \section{Description of models}
 \label{sec:models}
-    In this section, you should briefly describe the model you are using for each task, along with the rationale. You may opt to use a single learning algorithm to solve the problem or multiple ones, but bear in mind there are page limitations and that you should explain your rationale behind your choices. That is, the algorithmic description must detail your reasons for selecting a particular model.
+\subsection{2D object detection model: YOLOv8}
+\subsubsection{Architectural overview}
+YOLOv8 adopts a modular design with three core components: Backbone, Neck, and Head, optimized for real-time object detection.
+
+\begin{enumerate}
+    \item Backbone:    
+
+    Built on an enhanced CSPNet (Cross Stage Partial Network)\cite{wangCSPNetNewBackbone2019} architecture derived from CSPDarknet\cite{bochkovskiyYOLOv4OptimalSpeed2020a}.
+Employs depthwise separable convolutions and CSP bottleneck blocks to reduce computational redundancy while maintaining feature diversity.
+Captures multi-scale features through hierarchical layers, balancing low-level texture details and high-level semantic information.
     
-    You can clarify them with flow charts, figures or equations. An example of how to draw an image is demonstrated in Fig. \ref{fig:roberts_building}.
+    \item Neck:
     
-    \begin{figure}[htb]
+    Combines Feature Pyramid Network (FPN)\cite{Lin2016FeaturePN} and Path Aggregation Network (PAN)\cite{Liu2018PathAN} in a hybrid FPN+PAN structure.
+Enhances multi-scale feature fusion by optimizing bidirectional information flow between shallow and deep layers.
+Improves small object detection through refined feature map aggregation.
+
+\begin{figure}[htb]
     \centering
-    \includegraphics[width=0.48\textwidth]{images/Roberts_building.jpg}
-    \caption{A nice view of Roberts Building}
-    \label{fig:roberts_building}
-    \end{figure}
+    \includegraphics[width=0.5\textwidth]{images/Variations of FPN architectures in YOLOv8.jpg}
+    \caption{Variations of FPN architectures in YOLOv8}
+    \label{fig:fpn_architectures}
+\end{figure}
+
+\item  Head:
+
+Anchor-free prediction mechanism replaces predefined anchor boxes, directly predicting bounding box coordinates and class probabilities.
+Simplifies training by eliminating anchor-related hyperparameters (e.g., aspect ratios, scales).
+Utilizes decoupled prediction heads for classification and localization to reduce task interference.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/Process of Object Detection.jpg}
+    \caption{Process of Object Detection}
+    \label{fig:object_detection_process}
+\end{figure}
+
+\end{enumerate}
+
+\subsubsection{Training Methodologies}
+
+\begin{enumerate}
+    \item Advanced Data Augmentation
     
-    \subsection{Task A: the task name}
-    \label{ssec:desc_models_A1}
-    Hello world!
-    \subsection{Task B: the task name}
-    \label{ssec:desc_models_B}
-    Hello world!
-    ...
+    \textbf{Mosaic Augmentation:} Combines 4+ training images into a single mosaic, exposing the model to diverse object scales and spatial configurations. Enhances robustness to occlusions and partial visibility.
     
+    \textbf{Mixup Augmentation:} Blends two images linearly to generate synthetic training samples, improving generalization.
+    
+    \textbf{Adaptive Augmentation:} Dynamically adjusts augmentation intensity based on dataset characteristics and training progress.
+
+    \item Loss Function Design
+    
+    \textbf{Focal Loss:} Addresses class imbalance by down-weighting easy examples and focusing on hard-to-classify objects.
+    
+    \textbf{IoU (Intersection over Union) Loss:} Optimizes bounding box regression using GIoU (Generalized IoU)\cite{Rezatofighi2019GeneralizedIO} to handle overlapping and non-overlapping objects.
+    
+    \textbf{Objectness Loss:} Predicts the probability of an object existing in a region, improving localization confidence.
+
+    \item Mixed Precision Training
+    
+    Combines FP16 (16-bit floating-point) and FP32 (32-bit) operations to accelerate training on NVIDIA GPUs. Reduces memory consumption by 30--50\% while maintaining numerical stability.
+
+\end{enumerate}
+
+YOLOv8 represents a paradigm shift in object detection, combining architectural refinements (CSPNet, FPN+PAN), training optimizations (anchor-free prediction, mixed precision), and developer-friendly tooling. In the context of our project, YOLOv8's ability to process 2D tomographic slices efficiently complements the 3D volumetric capabilities of Swin UNETR, enabling a robust pipeline for detecting bacterial flagellar motors in cryo-ET data. Its scalable variants and state-of-the-art performance on benchmarks like COCO and Roboflow 100 highlight its versatility, making it an ideal choice for applications requiring both speed and accuracy, such as our automated detection system for structural biology research.
+
+
+\subsection{3D object detection model: Swin UNEt TRansformers (Swin UNETR)}
+Swin UNETR (Swin UNEt TRansformers)\cite{Hatamizadeh2022SwinUS} is a 3D medical image segmentation model that integrates the hierarchical Swin Transformer as an encoder and a CNN-based decoder. It addresses the limitations of convolutional neural networks (CNNs) in modeling long-range dependencies and achieves state-of-the-art performance in tasks such as brain tumor segmentation. The model leverages shifted window-based self-attention and hierarchical feature fusion to balance global context modeling and local detail preservation.
+
+\subsubsection{Architectural overview}
+The model follows a U-shaped design with the following components:
+
+\begin{figure*}[htb]
+    \centering
+    \includegraphics[width=0.98\textwidth]{images/Overview of the Swin UNETR architecture.pdf}
+    \caption{Overview of the Swin UNETR architecture}
+    \label{fig:Overview_of_the_Swin_UNETR_architecture}
+\end{figure*}
+
+\begin{enumerate}
+    \item Encoder: Hierarchical Swin Transformer
+    
+    Input Patch Partition:
+    Input volumetric data (e.g., cryo-ET data) is divided into non-overlapping 3D patches of size \( P \times P \times P \) (default: \( 2 \times 2 \times 2 \)). Each patch is linearly projected into an embedding space of dimension \( C \).  
+    \textbf{Example:} For input \( \mathcal{X} \in R^{H \times W \times D \times S} \), output tokens have dimensions \( \left\lceil \frac{H}{P} \right\rceil \times \left\lceil \frac{W}{P} \right\rceil \times \left\lceil \frac{D}{P} \right\rceil \times C \).
+
+    Shifted Window Multi-Head Self-Attention (SW-MSA)\cite{liuSwinTransformerHierarchical2021}:     
+    The encoder employs alternating Window Multi-Head Self-Attention (W-MSA) and Shifted Window Multi-Head Self-Attention (SW-MSA) layers to model local and cross-window interactions efficiently.  
+For consecutive layers \( l \) and \( l+1 \):  
+
+\begin{align}
+    \hat{z}^l &= \text{W-MSA}\left(\text{LN}(z^{l-1})\right) + z^{l-1} \nonumber \\
+    z^l &= \text{MLP}\left(\text{LN}(\hat{z}^l)\right) + \hat{z}^l \nonumber \\
+    \hat{z}^{l+1} &= \text{SW-MSA}\left(\text{LN}(z^l)\right) + z^l \nonumber \\
+    z^{l+1} &= \text{MLP}\left(\text{LN}(\hat{z}^{l+1})\right) + \hat{z}^{l+1}
+\end{align}
+LN is Layer normalization applied to token embeddings.  
+MLP is Two-layer feed-forward network with GELU activation and expansion ratio 4.  
+
+Window Partitioning Mechanism: The 3D feature map \( z \in R^{H' \times W' \times D' \times C} \) is divided into non-overlapping windows of size \( M \times M \times M \):  
+\begin{equation}
+    \text{Number of Windows} = \left\lceil \frac{H'}{M} \right\rceil \times \left\lceil \frac{W'}{M} \right\rceil \times \left\lceil \frac{D'}{M} \right\rceil
+\end{equation}
+
+Shifted Window: In layer \( l+1 \), windows are cyclically shifted by \( \left\lfloor \frac{M}{2} \right\rfloor \) voxels along all three axes (height, width, depth) to enable inter-window communication, as shown in fig \ref{fig:shifted_windowing_mechanism}.  
+Self-attention is computed within local windows of size \( M \times M \times M \). Windows are shifted by \( \left\lfloor \frac{M}{2} \right\rfloor \) voxels between consecutive layers to enable cross-window interaction.  
+\begin{equation}
+\text{Attention}(Q, K, V) = \text{Softmax}\left( \frac{QK^T}{\sqrt{d}} + B \right) V
+\end{equation}
+where \( Q, K, V \) are query, key, and value matrices; \( d \) is the query/key dimension; \( B \) is the relative position bias matrix\cite{Vaswani2017AttentionIA}.  
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/shifted windowing mechanism.pdf}
+    \caption{Shifted windowing mechanism}
+    \label{fig:shifted_windowing_mechanism}
+\end{figure}
+
+\item Decoder: CNN-based Decoder
+
+The decoder follows a U-Net architecture with skip connections from encoder stages i ∈ {0,1,2,3,4} and bottleneck (i=5). At each level:
+ 
+Feature Reshaping: 
+            Encoder outputs are reshaped to spatial dimensions: 
+            \begin{equation}
+                z_i \in R^{\frac{H}{2^i} \times \frac{W}{2^i} \times \frac{D}{2^i} \times C}
+            \end{equation}
+            
+      Residual Processing: 
+            Two 3×3×3 conv layers with instance norm (IN) process features\cite{Ulyanov2016InstanceNT}:
+            \begin{equation}
+                z'_i = \text{Conv3D}(\text{ReLU}(\text{IN}(\text{Conv3D}(z_i))))
+            \end{equation}
+            
+        Upsampling and Fusion: 
+            Deconvolution (stride=2) doubles resolution before concatenation:
+            \begin{align}
+                z_{up} &= \text{Deconv3D}(z'_i) \in R^{\frac{H}{2^{i-1}} \times \frac{W}{2^{i-1}} \times \frac{D}{2^{i-1}} \times C} \\
+                z_{fused} &= \text{Concat}(z_{up}, z_{i-1})
+            \end{align}
+        
+  Final Processing:
+            Another residual block refines fused features before output:
+            
+            \begin{equation}
+                \hat{z}_i = \text{ResBlock}(z_{fused})
+            \end{equation}
+
+       Segmentation Head:
+            1×1×1 conv with sigmoid produces voxel-wise probabilities:
+            \begin{equation}
+                P = \sigma(\text{Conv3D}(\hat{z}_0))
+            \end{equation}
+
+The symmetric decoder progressively recovers resolution while integrating multi-scale features through skip connections.
+\end{enumerate}
+
+
 
 \section{Implementation}
 \label{sec:impl}
-    This section must provide the detailed implementation of your models. In particular, you must provide the name and use of external libraries, explain hyper-parameter selection, training pipeline (if any) and key modules/classes/functions/algorithms.
-    
-    You also must provide a detailed description of the dataset (content, size, format, etc.), any data pre-processing that was applied and how you separate your dataset into training, validation and test sets.
-    
-    The execution of your models also should be reported here. In particular, this section should include a thorough discussion on the training convergence and stopping criterion (it is recommended that learning curves graphs be used to this effect).
 
-    \subsection{Task A: the task name}
-    \label{ssec:imp_models_A1}
-    \subsubsection{module name}
-    Hello world!
-    \subsection{Task B: the task name}
-    \label{ssec:imp_models_B}
-    Hello world! ...
-    
+\subsection{Data description}
+The dataset\cite{byu-locating-bacterial-flagellar-motors-2025} used for this project consists of 3D tomograms of biological samples, where the objective is to detect the flagellar motor centers—a critical subcellular structure. Each tomogram is represented as a stack of 2D JPEG slices, forming a volumetric image. The dataset includes flagellar motor coordinates, where, if a motor is present, its 3D position is defined by the motor axis $z$ as the slice index in the tomogram stack, motor axis $y$ as the vertical position (height) within the slice, and motor axis $x$ as the horizontal position (width) within the slice. 
+If no motor exists, the submission should indicate this (e.g., with '-1'). Additionally, the dataset provides tomogram metadata, including the array shape, which specifies the dimensions of each tomogram ($z$-axis as the number of slices, $y$-axis as the height of each slice, and $x$-axis as the width of each slice), and voxel spacing, which indicates the physical distance between voxels provided per axis. 
+This dataset supports 3D biomedical image analysis, specifically for locating subcellular structures in volumetric data, and the task involves processing 2D slice sequences to infer 3D coordinates, combining computer vision and spatial reasoning.
+
+\subsection{Data preprocessing}
+\subsubsection{Data visualization}
+To effectively process the tomogram data, we first conducted comprehensive visualization and examination. This revealed challenging characteristics including varying contrast levels, significant noise, and inconsistent motor appearances across different tomographic planes. Figure \ref{fig:sample_slices} displays representative slices from the training dataset, highlighting the diversity in image quality and structural clarity that our models needed to accommodate.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/random_training_samples.png}
+    \caption{Sample tomographic slices}
+    \label{fig:sample_slices}
+\end{figure}
+
+Our analysis involved examining the statistical distributions of key features across the dataset. Figure \ref{fig:feature_distributions} illustrates the distributions of motor coordinates and tomogram dimensions, revealing important characteristics that informed our modeling approach.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/feature_distributions.png}
+    \caption{Distributions of key dataset features}
+    \label{fig:feature_distributions}
+\end{figure}
+
+
+Further quantitative analysis revealed several important dataset characteristics:
+
+\begin{enumerate}
+    \item \textbf{Label completeness}: As shown in Table \ref{tab:sample_labels}, the training labels provide comprehensive information including tomogram identifiers, 3D motor coordinates, and voxel spacing. The value "-1.0" indicates tomograms without motors.
+    \item \textbf{Data integrity}: No missing values were detected across all columns, confirming high data quality.
+    \item \textbf{Dimensional variation}: Tomogram dimensions varied considerably across the dataset—Z-axis (slice count): 300-800, X-axis (width): 924-1912, and Y-axis (height): 924-1847—necessitating adaptive processing strategies.
+    \item \textbf{Resolution diversity}: Table \ref{tab:voxel_spacing} summarizes the distribution of voxel spacing values, with 13.1Å, 15.6Å, and 19.7Å being most prevalent, indicating varying levels of detail across samples.
+\end{enumerate}
+
+\begin{table}[htb]
+    \centering
+    \caption{Representative examples from training labels demonstrating data structure}
+    \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{cccccc}
+        \toprule
+        Row ID & Tomogram ID & Motor Axis 0 & Motor Axis 1 & Motor Axis 2 & Voxel Spacing \\
+        \midrule
+        0 & tomo\_003acc & -1.0 & -1.0 & -1.0 & 6.5 \\
+        1 & tomo\_00e047 & 169.0 & 546.0 & 603.0 & 15.6 \\
+        2 & tomo\_00e463 & 235.0 & 403.0 & 137.0 & 19.7 \\
+        3 & tomo\_00e463 & 243.0 & 363.0 & 153.0 & 19.7 \\
+        4 & tomo\_00e463 & 222.0 & 379.0 & 144.0 & 19.7 \\
+        \bottomrule
+    \end{tabular}
+    }
+    \label{tab:sample_labels}
+\end{table}
+
+\begin{table}[htb]
+    \centering
+    \caption{Distribution of voxel spacing values across the dataset}
+    \begin{tabular}{lc}
+        \toprule
+        Voxel Spacing & Count \\
+        \midrule
+        6.5  & 3   \\
+        13.1 & 291 \\
+        13.2 & 2   \\
+        13.3 & 18  \\
+        15.6 & 177 \\
+        16.1 & 40  \\
+        16.8 & 85  \\
+        19.2 & 7   \\
+        19.3 & 10  \\
+        19.7 & 104 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:voxel_spacing}
+\end{table}
+
+This analysis informed our subsequent preprocessing decisions, particularly regarding normalization strategies and model input dimensionality requirements.
+
+\subsubsection{Data exploration}
+After the initial visualization, we conducted a comprehensive statistical analysis of the dataset to better understand its characteristics and inform our modeling approach.
+
+\begin{table}[htb]
+    \centering
+    \caption{Statistical summary of key dataset features}
+    \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        Statistic & Motor Axis 0 & Motor Axis 1 & Motor Axis 2 & Array Shape Z & Array Shape X & Array Shape Y \\
+        \midrule
+        count & 737.00 & 737.00 & 737.00 & 737.00 & 737.00 & 737.00 \\
+        mean  & 101.86 & 294.85 & 300.82 & 422.65 & 950.21 & 954.82 \\
+        std   & 102.21 & 282.33 & 293.37 & 174.34 & 64.86 & 97.23 \\
+        min   & -1.00 & -1.00 & -1.00 & 300.00 & 924.00 & 924.00 \\
+        25\%  & -1.00 & -1.00 & -1.00 & 300.00 & 928.00 & 928.00 \\
+        50\%  & 106.00 & 278.00 & 280.00 & 300.00 & 959.00 & 928.00 \\
+        75\%  & 170.00 & 549.00 & 567.00 & 500.00 & 960.00 & 956.00 \\
+        max   & 466.00 & 904.00 & 902.00 & 800.00 & 1912.00 & 1847.00 \\
+        \bottomrule
+    \end{tabular}%
+    }
+    \label{tab:dataset_statistics}
+\end{table}
+
+This statistical analysis revealed several important insights:
+
+\begin{enumerate}
+    \item \textbf{Motor presence distribution}: Approximately 46\% of data points have value "-1.0" for motor coordinates, indicating tomograms without motors, which creates a class imbalance challenge.    
+    \item \textbf{Spatial distribution}: Analysis of motor positions revealed no strong spatial bias, with motors distributed throughout the volume space, though slightly favoring central regions.
+\end{enumerate}
+
+To understand feature relationships, we computed correlations between key variables using Pearson's correlation coefficient. The results, shown in Table \ref{tab:correlation_matrix}, indicate weak correlations between motor coordinates and tomogram dimensions, suggesting that motor localization is not strongly influenced by tomogram size.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/correlation_heatmap.png}
+    \caption{Correlation matrix of key dataset features}
+    \label{tab:correlation_matrix}
+\end{figure}
+
+
+These insights directly informed our preprocessing strategies, particularly the need for robust normalization and data augmentation techniques to account for the observed variability.
+
+\subsection{2D model YOLOv8 implementation}
+
+\subsubsection{Dataset preparation}
+To train our YOLO-based motor detection model, we developed a robust data preprocessing pipeline. This included extracting 2D slices around annotated motor locations from tomograms, applying percentile-based contrast enhancement for improved clarity, and generating fixed-size bounding boxes centered on motor positions in YOLO-compatible format. We ensured a tomogram-based train/validation split (80\%/20\%) to prevent data leakage, organizing the dataset into the required directory structure with a configuration file for seamless integration into the YOLO framework.
+
+\subsubsection{Model training}
+To train the YOLOv8 model for detecting bacterial flagellar motors, we utilized transfer learning by fine-tuning the pretrained YOLOv8n (nano) model, which is optimized for lightweight applications and faster inference. The training process was configured with the following key parameters:
+
+\begin{itemize}
+    \item \textbf{Dataset Configuration:} The dataset was specified using a YAML file, which defined the paths to the training and validation datasets, class labels, and other metadata.
+    \item \textbf{Pretrained Weights:} We initialized the model with pretrained weights, leveraging its robust feature extraction capabilities for object detection tasks.
+    \item \textbf{Epochs:} The model was trained for 100 epochs to ensure convergence while avoiding overfitting.
+    \item \textbf{Batch Size:} A batch size of 16 was chosen to balance memory usage and training stability.
+    \item \textbf{Image Size:} Input images were resized to 640x640 pixels, maintaining a balance between computational efficiency and detection accuracy.
+\end{itemize}
+
+The training process involved optimizing the model using the Adam optimizer with a learning rate scheduler to adaptively adjust the learning rate. Advanced data augmentation techniques, such as mosaic and mixup, were applied to enhance the model's generalization capabilities.
+
+The results of the training process were visualized, as shown in Figure \ref{fig:yolo_training_results}, showing key metrics such as precision, recall, and mAP (mean Average Precision) over the epochs. The training loss and validation loss curves indicated steady convergence, with validation loss stabilizing after approximately 80 epochs. The precision-recall curve demonstrated the model's ability to achieve high recall without significant loss of precision, highlighting its effectiveness in detecting motors across diverse tomographic slices.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/results.png}
+    \caption{Training and validation results for YOLOv8 model}
+    \label{fig:yolo_training_results}
+\end{figure}
+
+\subsection{3D model Swin UNETR implementation}
+
+\subsubsection{}
+
+
+
+
 
 \section{Experimental Results and Analysis}
 \label{sec:results}
-    This section describes and discusses your results. Additionally, this section should include accuracy prediction scores on a separate test dataset, provided by the module organizers, but not used during your training and validation process.
-    
-    We recommend you use a table to list the tasks, models and results before analysis.
-    
-
-    \begin{table}[]
-    \label{table:Table1}
-    \begin{tabular}{@{}lllll@{}}
-    \toprule
-    Task & Model & Train Acc & Val Acc & Test Acc \\ \midrule
-    A   &       &           &         &          \\
-    B   &       &           &         &          \\
-    ...   &       &           &         &          \\
-    ...   &       &           &         &          \\ \bottomrule
-    \end{tabular}
-    \end{table}
+  
 
 \section{Conclusion}
 \label{sec:conc}
     This last section summarizes the findings and suggests directions for future improvements.
 
+
+
 \vfill\pagebreak
+
+
+
 
 % References should be produced using the bibtex program from suitable
 % BiBTeX files (here: strings, refs, manuals). The IEEEbib.bst bibliography
@@ -125,5 +403,6 @@ In the following sections, we present a literature survey of relevant techniques
 % -------------------------------------------------------------------------
 \bibliographystyle{IEEEbib}
 \bibliography{refs}
+
 
 \end{document}

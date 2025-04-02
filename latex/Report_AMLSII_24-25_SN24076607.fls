@@ -527,9 +527,30 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 OUTPUT Report_AMLSII_24-25_SN24076607.xdv
-INPUT ./images/Roberts_building.jpg
-INPUT ./images/Roberts_building.jpg
-INPUT images/Roberts_building.jpg
+INPUT ./images/Variations of FPN architectures in YOLOv8.jpg
+INPUT ./images/Variations of FPN architectures in YOLOv8.jpg
+INPUT images/Variations of FPN architectures in YOLOv8.jpg
+INPUT ./images/Process of Object Detection.jpg
+INPUT ./images/Process of Object Detection.jpg
+INPUT images/Process of Object Detection.jpg
+INPUT ./images/Overview of the Swin UNETR architecture.pdf
+INPUT ./images/Overview of the Swin UNETR architecture.pdf
+INPUT images/Overview of the Swin UNETR architecture.pdf
+INPUT ./images/shifted windowing mechanism.pdf
+INPUT ./images/shifted windowing mechanism.pdf
+INPUT images/shifted windowing mechanism.pdf
+INPUT ./images/random_training_samples.png
+INPUT ./images/random_training_samples.png
+INPUT images/random_training_samples.png
+INPUT ./images/feature_distributions.png
+INPUT ./images/feature_distributions.png
+INPUT images/feature_distributions.png
+INPUT ./images/correlation_heatmap.png
+INPUT ./images/correlation_heatmap.png
+INPUT images/correlation_heatmap.png
+INPUT ./images/results.png
+INPUT ./images/results.png
+INPUT images/results.png
 INPUT ./Report_AMLSII_24-25_SN24076607.bbl
 INPUT Report_AMLSII_24-25_SN24076607.bbl
 INPUT ./Report_AMLSII_24-25_SN24076607.bbl
