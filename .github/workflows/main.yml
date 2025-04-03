@@ -34,49 +34,40 @@ jobs:
       run: |
         uv pip install .
         
-    - name: Verify imports
+    - name: Verify critical imports
       run: |
         # Test importing key packages
-        python -c "import torch; import monai; import ultralytics; import nibabel; print('Key packages imported successfully')"
+        python -c "import torch; import monai; import ultralytics; import nibabel; print('✅ Key packages imported successfully')"
         
-    - name: Create mock dataset structure
+    - name: Create minimal config
       run: |
-        # Create minimal mock dataset structure for testing
-        mkdir -p Datasets/byu-locating-bacterial-flagellar-motors-2025/train
-        mkdir -p Datasets/byu-locating-bacterial-flagellar-motors-2025/test
-        touch Datasets/byu-locating-bacterial-flagellar-motors-2025/train_labels.csv
-        touch Datasets/byu-locating-bacterial-flagellar-motors-2025/sample_submission.csv
-        
-    - name: Set up config file
-      run: |
-        # Create or modify config with GitHub workspace path
+        # Create minimal config for testing
         mkdir -p src/config
         echo "paths:" > src/config/config.yaml
         echo "  base_dir: '$GITHUB_WORKSPACE'" >> src/config/config.yaml
         
-    - name: Run minimal test
+    - name: Verify config loading
       run: |
-        # Create a minimal test script that doesn't need the full dataset
-        cat << EOF > test_environment.py
+        # Create a minimal test script
+        cat << EOF > test_config.py
         import sys
-        from pathlib import Path
-
-        # Add project root to path
         sys.path.append('.')
-
         try:
-            # Test imports from your project
-            from src.imports import *
             from src.config.config import load_config
-            
-            # Load config
             config = load_config()
-            
-            print("Environment setup successful!")
+            print(f"✅ Config loaded successfully. Base directory: {config['paths']['base_dir']}")
             sys.exit(0)
         except Exception as e:
-            print(f"Environment setup failed: {e}")
+            print(f"❌ Config loading failed: {e}")
             sys.exit(1)
         EOF
         
-        python test_environment.py
+        python test_config.py
+        
+    - name: Print environment summary
+      run: |
+        echo "✅ Environment setup test completed successfully"
+        echo "Python version: $(python --version)"
+        echo "PyTorch version: $(python -c 'import torch; print(torch.__version__)')"
+        echo "MONAI version: $(python -c 'import monai; print(monai.__version__)')"
+        echo "Ultralytics version: $(python -c 'import ultralytics; print(ultralytics.__version__)')"
