@@ -81,6 +81,7 @@ def create_animation(df, tomo_id, fps=20, imsize=384, frame_skip=1, save_as_gif=
     if save_as_gif:
         os.makedirs(save_dir, exist_ok=True)
         anim.save(os.path.join(save_dir, f"patient_{tomo_id}.gif"), fps=fps, writer='imagemagick')
+        print(f'Animation saved to {os.path.join(save_dir, f"patient_{tomo_id}.gif")}')
         
     return anim
 
@@ -147,6 +148,7 @@ def create_animation_images(df, tomo_id, n_images=16, imsize=384, save_dir="./")
     plt.tight_layout()
     os.makedirs(save_dir, exist_ok=True)
     plt.savefig(os.path.join(save_dir, f"{tomo_id}_image_matrix.png"))
+    print(f'Image matrix saved to {os.path.join(save_dir, f'{tomo_id}_image_matrix.png')}')
     plt.close()
 
 def visualize_random_training_samples(num_samples=4,images_train_dir=config.YOLO_IMAGES_TRAIN,labels_train_dir=config.YOLO_LABELS_TRAIN):
@@ -256,7 +258,7 @@ def visualize_random_training_samples(num_samples=4,images_train_dir=config.YOLO
     
     plt.tight_layout()
     plt.savefig(f"{config.OUTPUT_DIR}/motor_visualization/random_training_samples.png")
-    print(f"Displayed {num_samples} random images with YOLO annotations")
+    print(f"Displayed {num_samples} random images with YOLO annotations, saved at {config.OUTPUT_DIR}/motor_visualization/random_training_samples.png")
 
 def plot_dfl_loss_curve(run_dir):
     """

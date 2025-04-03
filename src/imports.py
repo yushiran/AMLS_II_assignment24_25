@@ -83,6 +83,7 @@ from scipy.ndimage import gaussian_filter
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from src.config.config import config  # 使用绝对路径导入from data import *
-from models import *
-from utils import *
+from src.models import *
+from src.utils import *
+from src.data import *
 print_config()

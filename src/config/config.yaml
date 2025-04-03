@@ -6,7 +6,7 @@ paths:
   test_dir: 'test'
   output_dir: 'outputs'
   submission_dir: 'outputs/submissions'
-  model_dir: 'models'
+  model_dir: 'src/models'
   # yolo dir
   yolo_dataset_dir: 'Datasets/yolo_dataset'
   yolo_model_dir: 'src/models/yolo_v8'

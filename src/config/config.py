@@ -51,6 +51,7 @@ class Config:
             self.YOLO_LABELS_VAL,
             self.YOLO_MODEL_DIR,
             self.YOLO_WEIGHTS_DIR,
+            self.YOLO_BEST_MODEL_DIR,
             self.SUBMISSION_DIR,
             self.UNET_MODEL_DIR,
             self.UNET_DATAESET_DIR,
