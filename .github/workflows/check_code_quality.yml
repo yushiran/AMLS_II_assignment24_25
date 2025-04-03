@@ -156,24 +156,3 @@ jobs:
         fi
         
         cat code_quality_report.md
-        
-    - name: Upload code quality report
-      uses: actions/upload-artifact@v3
-      with:
-        name: code-quality-report
-        path: code_quality_report.md
-        
-    - name: Comment PR with quality report
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const fs = require('fs');
-          const report = fs.readFileSync('code_quality_report.md', 'utf8');
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: report
-          });
