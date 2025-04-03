@@ -376,19 +376,138 @@ The results of the training process were visualized, as shown in Figure \ref{fig
 
 \subsection{3D model Swin UNETR implementation}
 
-\subsubsection{}
+\subsubsection{Dataset preparation}
+To prepare the dataset for the 3D Swin UNETR model, we implemented a detailed preprocessing pipeline to convert raw tomographic data into NIfTI (.nii.gz) format, organizing it for volumetric analysis. 
+The raw data, consisting of 3D tomograms represented as stacks of 2D JPEG slices, was processed by loading and stacking slices along the Z-axis to form a 3D array while preserving the volumetric structure. 
+Each slice was normalized using the 2nd and 98th percentiles of pixel intensity values to enhance contrast and reduce the impact of outliers, ensuring consistent intensity scaling across the dataset. The motor coordinates provided in the dataset were normalized relative to the tomogram dimensions, representing them as fractions of the tomogram size to ensure invariance to dimensional variations. 
+A 3D heatmap was generated for each tomogram to represent motor locations, where Gaussian filters created smooth, localized peaks at motor positions, serving as ground truth labels for the model. Tomograms and corresponding heatmaps were cropped around motor locations and resized to a fixed size of \(96 \times 96 \times 96\) voxels, ensuring uniform input dimensions while dynamically adjusting cropping regions to remain within tomogram bounds. 
+Finally, data augmentation techniques, including random flipping along spatial axes, random rotations, and intensity scaling, were applied to simulate variability in tomogram acquisition conditions and enhance model generalization. 
+The processed data can be visualized in 3D using the open-source Niivue library as shown in Figure \ref{fig:3d_visualization}.
 
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/3D view of tomogram.png}
+    \caption{3D visualization of tomogram}
+    \label{fig:3d_visualization}
+\end{figure}
 
+\subsubsection{Model training}
+To train the Swin UNETR model for detecting bacterial flagellar motors in 3D tomograms, we implemented a comprehensive training pipeline leveraging the MONAI framework. The training process was configured with the following key parameters:
 
+\begin{itemize}
+    \item \textbf{Dataset Configuration:} The dataset was prepared in NIfTI format, with separate directories for training and validation data. Each sample consisted of a 3D tomogram and its corresponding heatmap label.
+    \item \textbf{Model Architecture:} The Swin UNETR model was initialized with a hierarchical Swin Transformer encoder and a CNN-based decoder, optimized for volumetric segmentation tasks.
+    \item \textbf{Loss Function:} Mean Squared Error (MSE) loss was used to measure the difference between predicted heatmaps and ground truth labels, ensuring precise localization of motor centers.
+    \item \textbf{Optimizer:} The AdamW optimizer was employed with a learning rate of $1 \times 10^{-4}$ and weight decay of $1 \times 10^{-5}$ to balance convergence speed and generalization.
+    \item \textbf{Batch Size:} A batch size of 8 was chosen to maximize GPU utilization while maintaining stable training dynamics.
+    \item \textbf{Training Duration:} The model was trained for 50 epochs, with validation performed after each epoch to monitor performance.
+\end{itemize}
 
+The training and validation loss curves, shown in Figures \ref{fig:training_loss} and \ref{fig:validation_loss}, demonstrate steady convergence. The training loss decreased rapidly during the initial epochs, stabilizing after approximately 10 epochs, while the validation loss followed a similar trend, indicating effective generalization.
 
-\section{Experimental Results and Analysis}
-\label{sec:results}
-  
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/unet_train_epoch_loss_visualization.png}
+    \caption{Training loss curve for Swin UNETR model}
+    \label{fig:training_loss}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/unet_val_epoch_loss_visualization.png}
+    \caption{Validation loss curve for Swin UNETR model}
+    \label{fig:validation_loss}
+\end{figure}
+
+\section{Experimental Results and Analysis}  
+\label{sec:results}  
+
+\subsection{Evaluation Metric}
+
+The performance of the models was evaluated using both quantitative metrics and qualitative assessments. The evaluation considered two key aspects: classification accuracy, which determines whether a motor is present, and localization accuracy, which assesses the precision of the predicted motor coordinates.  
+
+Let \(\mathbf{y}\) and \(\hat{\mathbf{y}}\) denote the ground truth and predicted motor axis coordinates, respectively. A prediction is considered correct if the Euclidean distance between \(\mathbf{y}\) and \(\hat{\mathbf{y}}\) is within a predefined threshold \(T = 1000\) Å. Accordingly, we define:  
+
+True Positive (TP): A prediction satisfying  \[\|\mathbf{y} - \hat{\mathbf{y}}\|_2 \leq T.\]
+False Negative (FN): A prediction that exceeds the threshold:  
+  \[
+  \|\mathbf{y} - \hat{\mathbf{y}}\|_2 > T.
+  \]  
+
+To evaluate model performance, we use the \(F_{\beta}\)-score, which balances precision and recall. Setting \(\beta=2\) emphasizes recall twice as much as precision:  
+\begin{equation}
+    F_\beta = (1+\beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{\beta^2 \cdot \text{Precision} + \text{Recall}}.
+\end{equation}  
+Here, precision and recall are given by  
+\[
+\text{Precision} = \frac{TP}{TP + FP}, \quad  
+\text{Recall} = \frac{TP}{TP + FN}.
+\]  
+
+\subsection{Model performance comparison}
+
+\begin{table}[htb]
+    \centering
+    \caption{Performance metrics for YOLOv8 and Swin UNETR models on the test set}
+    \begin{tabular}{lccc}
+        \toprule
+        Model & Precision & Recall & $F_2$-Score \\
+        \midrule
+        YOLOv8 & 0.86 & 0.85 & 0.8 \\
+        Swin UNETR & 0.65 & 0.63 & 0.6 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:combined_results}
+\end{table}
+
+Table \ref{tab:combined_results} shows that YOLOv8 significantly outperformed Swin UNETR across all metrics. Several factors contributed to this performance gap:
+The original task involves detecting specific coordinate points rather than segmenting regions, which inherently favors detection frameworks like YOLOv8. For Swin UNETR implementation, motor coordinate labels had to be transformed into heatmap representations, introducing information distortion. This conversion process—where discrete coordinate points were expanded into Gaussian-centered distributions—created an artificial segmentation problem that deviated from Swin UNETR's optimal use case. The model had to learn to identify these artificially generated heatmap peaks rather than directly predicting coordinate locations.
+
+On the other hands, The computational requirements of the two models differed substantially:
+
+\begin{itemize}
+    \item \textbf{Parameter count}: Swin UNETR is significantly larger than YOLOv8n, requiring more data and computational resources for optimal training.
+    \item \textbf{Training approach}: YOLOv8 benefited from transfer learning, leveraging pre-trained weights that already encoded general visual features. In contrast, Swin UNETR was trained from scratch, requiring more epochs to develop effective feature representations.
+    \item \textbf{Training duration}: Due to GPU resource limitations, Swin UNETR was trained for only 50 epochs, likely insufficient for full convergence given its size and lack of pre-training.
+\end{itemize}
+
+Limited GPU memory significantly impacted the 3D approach:
+
+\begin{itemize}
+    \item \textbf{Volume partitioning}: The original tomographic volumes had to be divided into small ($96 \times 96 \times 96$ voxel) patches to fit in available GPU memory, fragmenting spatial context.
+    \item \textbf{Global context loss}: This partitioning eliminated important long-range dependencies and structural relationships that Swin UNETR was specifically designed to capture through its transformer architecture.
+    \item \textbf{Boundary artifacts}: Volume partitioning created artificial boundaries, potentially introducing edge artifacts that further complicated the learning process.
+\end{itemize}
+
+The nature of the task aligned more closely with YOLOv8's design principles:
+
+\begin{itemize}
+    \item \textbf{Problem formulation}: Flagellar motor detection fundamentally involves locating discrete points in 3D space, which maps cleanly to YOLO's object detection paradigm.
+    \item \textbf{Efficiency in 2D processing}: YOLOv8 efficiently processes individual 2D slices, requiring less memory while maintaining spatial context within each slice.
+    \item \textbf{Sparse annotation handling}: YOLO naturally handles sparse annotations (limited positive samples) through its objectness prediction mechanism, while Swin UNETR must learn to produce mostly-zero heatmaps with isolated peaks.
+\end{itemize}
+
+These results highlight that model selection should consider not only theoretical capabilities but also practical constraints of the specific task, available computational resources, and data representation format. While 3D models theoretically capture more complete spatial relationships in volumetric data, their benefits can be undermined by practical limitations in real-world implementation scenarios.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/test_sample.png}
+    \caption{Test sample with YOLOv8 predictions}
+    \label{fig:test_sample}
+\end{figure}
 
 \section{Conclusion}
 \label{sec:conc}
-    This last section summarizes the findings and suggests directions for future improvements.
+
+In conclusion, this study presents a comprehensive comparison of two deep learning approaches for detecting bacterial flagellar motors in cryo-ET data: a 2D approach using YOLOv8 and a 3D approach using Swin UNETR. Our experimental results demonstrate that the YOLOv8 model significantly outperforms the Swin UNETR model across all evaluation metrics, achieving an F2-score of 0.8 compared to 0.6 for the 3D approach.
+
+The superior performance of YOLOv8 can be attributed to several factors. First, the problem formulation of detecting discrete coordinate points aligns naturally with YOLO's object detection paradigm. Second, YOLOv8 benefits from transfer learning, leveraging pre-trained weights that already encode general visual features. Additionally, the 2D approach efficiently processes individual slices without the memory constraints faced by volumetric models, allowing it to maintain spatial context while requiring fewer computational resources.
+
+Despite its theoretical advantages in capturing complete 3D spatial relationships, Swin UNETR faced significant practical limitations in our implementation. The necessity to partition large tomographic volumes into small patches due to GPU memory constraints fragmented spatial context and eliminated important long-range dependencies. Furthermore, the conversion of discrete coordinate labels into heatmap representations introduced information distortion, creating an artificial segmentation problem that deviated from Swin UNETR's optimal use case.
+
+These findings highlight an important consideration in model selection: the theoretical capabilities of a model must be balanced against practical constraints of the specific task, available computational resources, and data representation format. While 3D models appear promising for volumetric data analysis, their benefits can be undermined by implementation challenges in real-world scenarios.
+
+Future work could explore hybrid approaches that combine the efficiency of 2D processing with the spatial awareness of 3D models, potentially through sequential 2D-then-3D processing or attention mechanisms that selectively focus on regions of interest. Additionally, investigating more memory-efficient 3D architectures or hierarchical processing strategies could help overcome the current limitations of volumetric approaches. As computational resources continue to improve, the gap between theoretical capabilities and practical implementation of 3D models will likely narrow, potentially shifting the balance in favor of fully volumetric approaches for cryo-ET analysis.
 
 
 

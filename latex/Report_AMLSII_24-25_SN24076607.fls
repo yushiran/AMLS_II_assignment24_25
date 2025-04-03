@@ -551,6 +551,21 @@ INPUT images/correlation_heatmap.png
 INPUT ./images/results.png
 INPUT ./images/results.png
 INPUT images/results.png
+INPUT ./images/3D view of tomogram.png
+INPUT ./images/3D view of tomogram.png
+INPUT images/3D view of tomogram.png
+INPUT ./images/unet_train_epoch_loss_visualization.png
+INPUT ./images/unet_train_epoch_loss_visualization.png
+INPUT images/unet_train_epoch_loss_visualization.png
+INPUT ./images/unet_val_epoch_loss_visualization.png
+INPUT ./images/unet_val_epoch_loss_visualization.png
+INPUT images/unet_val_epoch_loss_visualization.png
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx5.tfm
+INPUT ./images/test_sample.png
+INPUT ./images/test_sample.png
+INPUT images/test_sample.png
 INPUT ./Report_AMLSII_24-25_SN24076607.bbl
 INPUT Report_AMLSII_24-25_SN24076607.bbl
 INPUT ./Report_AMLSII_24-25_SN24076607.bbl
