@@ -97,6 +97,14 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```bash
 uv pip install . # Install dependencies using pyproject.toml (automatically generates uv.lock)
 ```
+
+You can learn more about the project's environment setup and code quality by reviewing the two workflows available in the GitHub Actions section:
+
+1. **Environment Setup Workflow**: This workflow demonstrates the steps to configure the project's environment, including dependency installation and virtual environment setup.
+2. **Code Quality Workflow**: This workflow runs automated checks such as linting, formatting, and static code analysis to ensure the code adheres to quality standards.
+
+To access these workflows, navigate to the "Actions" tab in the GitHub repository.
+
 ### Required Dependencies
 
 The main dependencies for this project include:
