@@ -33,7 +33,7 @@ The YOLOv8 model provided faster processing times, while the 3D approach offered
 The animation above demonstrates the detection process across multiple tomographic slices, showing how our models identify flagellar motors in 3D space.
 
 ## File Descriptions
-```
+```markdown
 ├── main.py                         # Main entry point for running experiments
 ├── pyproject.toml                  # Project configuration and dependencies
 ├── uv.lock                         # Dependency lock file for package versions
@@ -134,3 +134,8 @@ paths:
 ```bash
 uv run main.py
 ```
+
+This script performs the following steps:
+1. **Data Preprocessing**: Prepares the dataset for analysis by cleaning and transforming the data as needed.
+2. **Inference on Test Set**: Runs inference on the test dataset to generate predictions.
+3. **Visualization of Results**: Produces visualizations to help interpret and analyze the inference results.
