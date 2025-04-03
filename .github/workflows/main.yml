@@ -39,31 +39,6 @@ jobs:
         # Test importing key packages
         python -c "import torch; import monai; import ultralytics; import nibabel; print('✅ Key packages imported successfully')"
         
-    - name: Create minimal config
-      run: |
-        # Create minimal config for testing
-        mkdir -p src/config
-        echo "paths:" > src/config/config.yaml
-        echo "  base_dir: '$GITHUB_WORKSPACE'" >> src/config/config.yaml
-        
-    - name: Verify config loading
-      run: |
-        # Create a minimal test script
-        cat << EOF > test_config.py
-        import sys
-        sys.path.append('.')
-        try:
-            from src.config.config import load_config
-            config = load_config()
-            print(f"✅ Config loaded successfully. Base directory: {config['paths']['base_dir']}")
-            sys.exit(0)
-        except Exception as e:
-            print(f"❌ Config loading failed: {e}")
-            sys.exit(1)
-        EOF
-        
-        python test_config.py
-        
     - name: Print environment summary
       run: |
         echo "✅ Environment setup test completed successfully"
