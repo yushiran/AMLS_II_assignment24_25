@@ -1,4 +1,8 @@
 # AMLS_II_assignment24_25
+![GitHub repo size](https://img.shields.io/github/repo-size/yushiran/AMLS_II_assignment24_25)
+![GitHub last commit](https://img.shields.io/github/last-commit/yushiran/AMLS_II_assignment24_25)
+![GitHub stars](https://img.shields.io/github/stars/yushiran/AMLS_II_assignment24_25?style=social)
+![GitHub license](https://img.shields.io/github/license/yushiran/AMLS_II_assignment24_25)
 ## Project Overview
 This project presents an automated approach to detect bacterial flagellar motors in cryogenic electron tomography (cryo-ET) data using deep learning methods. Bacterial flagellar motors are crucial molecular machines that enable bacterial motility and pathogenesis, traditionally identified through manual labor-intensive processes.
 
