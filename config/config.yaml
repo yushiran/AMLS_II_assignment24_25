@@ -1,6 +1,6 @@
 paths:
   base_dir: '/home/yushiran/BYU_Locating_Bacterial_Flagellar_Motors_2025'
-  data_dir: 'byu-locating-bacterial-flagellar-motors-2025'
+  data_dir: 'Datasets/byu-locating-bacterial-flagellar-motors-2025'
   train_csv: 'train_labels.csv'
   train_dir: 'train'
   test_dir: 'test'
@@ -8,18 +8,17 @@ paths:
   submission_dir: 'outputs/submissions'
   model_dir: 'models'
   # yolo dir
-  yolo_dataset_dir: 'yolo_dataset'
+  yolo_dataset_dir: 'Datasets/yolo_dataset'
   yolo_model_dir: 'models/yolo_v8'
   yolo_weights: 'yolo_weights'
   yolo_best_model_dir: 'models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/weights/best.pt'
   # 3dunet dir
   3dunet_model_dir: 'models/3dunet'
-  3dunet_dataset_dir: '3dunet_dataset_heatmap'
+  3dunet_dataset_dir: 'Datasets/3dunet_dataset_heatmap'
   3dunet_output_dir: 'outputs/3dunet'
 
 
 random_seed: 42
-
 #inference parameters
 # Define detection and processing parameters
 infer_params:
