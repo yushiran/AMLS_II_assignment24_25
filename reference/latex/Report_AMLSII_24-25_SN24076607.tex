@@ -21,7 +21,7 @@
     This report presents a novel approach to automatically detect bacterial flagellar motors in cryogenic electron tomography (cryo-ET) data, exploring two complementary deep learning methods. 
     Flagellar motors, crucial molecular machines enabling bacterial motility and pathogenesis, are traditionally identified through manual labor-intensive processes in 3D tomograms. 
     Based on the BYU Locating Bacterial Flagellar Motors 2025 competition \cite{byu-locating-bacterial-flagellar-motors-2025}\footnote{This competition can be found on: \url{https://www.kaggle.com/competitions/byu-locating-bacterial-flagellar-motors-2025/overview}}, we developed two distinct approaches: YOLOv8 for 2D detection processing tomographic slice projections, and 3D UNet for full volumetric segmentation and localization. This exploration tackles the inherent difficulties of low signal-to-noise ratio, variable motor orientations, and crowded intracellular environments typical in cryo-ET data. 
-    Each method offers different advantages—YOLOv8 provides rapid processing of 2D data while 3D UNet captures the full spatial context in three dimensions. Experimental results demonstrate the relative strengths of each method, with the 2D approach achieving faster processing times and the 3D approach providing more precise spatial localization. The best-performing model achieved an F2-score of 0.87 with average location error below 500 Angstroms on the test dataset.
+    Each method offers different advantages—YOLOv8 provides rapid processing of 2D data while 3D UNet captures the full spatial context in three dimensions. Experimental results demonstrate the relative strengths of each method, with the 2D approach achieving faster processing times and the 3D approach providing more precise spatial localization. The best-performing model achieved an F2-score of 0.87 on the test dataset.
     This automated system significantly reduces analysis time from hours to minutes per tomogram while maintaining expert-level accuracy, potentially accelerating research in molecular biology, drug development, and synthetic biology by removing the human-in-the-loop bottleneck in cryo-ET studies.
     \footnote{The code is provided in GitHub: \url{https://github.com/yushiran/AMLS_II_assignment24_25.git}}
 \end{abstract}
@@ -38,10 +38,10 @@ Traditional approaches to identifying flagellar motors in cryo-ET data rely heav
 
 The BYU Locating Bacterial Flagellar Motors 2025 competition \cite{byu-locating-bacterial-flagellar-motors-2025} provides a platform to address these challenges through machine learning approaches. This report details our comprehensive solution to this problem, focusing on two complementary deep learning methodologies:
 
-\begin{itemize}
+\begin{enumerate}
     \item A 2D approach utilizing YOLOv8 \cite{jocherUltralyticsYolov5V702022}, a state-of-the-art object detection model, to process individual tomographic slices and aggregate results for 3D localization.
-    \item A 3D approach employing a modified 3D U-Net architecture incorporating Swin Transformer \cite{hatamizadehSwinUNETRSwin2022}\cite{cicek3DUNetLearning2016} for volumetric segmentation, designed to capture the full spatial context of the motors while leveraging the hierarchical feature extraction capabilities of vision transformers.
-\end{itemize}
+    \item A 3D approach employing a modified 3D U-Net architecture incorporating Swin Transformer \cite{Hatamizadeh2022SwinUS}\cite{cicek3DUNetLearning2016} for volumetric segmentation, designed to capture the full spatial context of the motors while leveraging the hierarchical feature extraction capabilities of vision transformers.
+\end{enumerate}
 
 Each approach offers distinct advantages: the 2D method provides computational efficiency and leverages the robust capabilities of established 2D object detection frameworks, while the 3D method preserves spatial continuity and context across the volume. Our implementation incorporates specialized data preprocessing pipelines, domain-specific adaptations to the neural network architectures, and post-processing strategies tailored to the unique challenges of cryo-ET data.
 
@@ -53,10 +53,8 @@ In the following sections, we present a literature survey of relevant techniques
 \section{Literature survey}
 \label{sec:lite}
     YOLOv8, developed by Ultralytics, represents a significant advancement in real-time object detection, transforming detection from multi-stage pipelines to single network predictions\cite{jocherUltralyticsYolov5V702022}. With its efficient backbone, optimized feature fusion, and decoupled head design separating classification and localization tasks, YOLOv8 offers an ideal balance of speed and accuracy for processing numerous tomographic slices in our 2D approach to motor detection\cite{yaseenWhatYOLOv8InDepth2024}.
-
-    The 3D U-Net architecture, proposed by Çiçek et al. \cite{cicek3DUNetLearning2016}, extends the original U-Net design to volumetric data by replacing 2D operations with their 3D counterparts. This modification enables the model to leverage full spatial context across all dimensions—crucial for analyzing tomographic volumes where structures exist in three dimensions. Its characteristic encoding-decoding paths connected by skip connections effectively combine semantic information with high-resolution features, making it particularly suitable for cryo-ET analysis where precise boundary delineation is critical.
-
-    Swin Transformer introduces a hierarchical vision transformer with shifted windows, addressing computational efficiency limitations while maintaining the ability to model long-range dependencies \cite{liuSwinTransformerHierarchical2021}. By computing self-attention within local windows while allowing for cross-window connections, this architecture efficiently captures both local and global relationships—an important capability when analyzing structural features in crowded cellular environments typical of cryo-ET data.
+    
+    The Swin UNETR architecture integrates the strengths of the 3D U-Net and Swin Transformer\cite{Hatamizadeh2022SwinUS}, making it particularly suitable for analyzing tomographic volumes in cryo-ET data. The 3D U-Net architecture, proposed by Çiçek et al. \cite{cicek3DUNetLearning2016}, extends the original U-Net design to volumetric data by replacing 2D operations with their 3D counterparts. This modification enables the model to leverage full spatial context across all dimensions—crucial for analyzing tomographic volumes where structures exist in three dimensions. Its characteristic encoding-decoding paths connected by skip connections effectively combine semantic information with high-resolution features, making it particularly suitable for cryo-ET analysis where precise boundary delineation is critical. Swin Transformer introduces a hierarchical vision transformer with shifted windows, addressing computational efficiency limitations while maintaining the ability to model long-range dependencies \cite{liuSwinTransformerHierarchical2021}. By computing self-attention within local windows while allowing for cross-window connections, this architecture efficiently captures both local and global relationships—an important capability when analyzing structural features in crowded cellular environments typical of cryo-ET data.
 
     Deep learning applications to cryo-ET analysis have shown promising results despite challenges including extremely low signal-to-noise ratios and missing wedge artifacts. Recent work has demonstrated that convolutional neural networks can effectively detect macromolecular complexes in cellular tomograms, outperforming traditional template matching methods\cite{chenConvolutionalNeuralNetworks2017}. Specialized preprocessing techniques, including denoising and contrast enhancement, have proven crucial for improving downstream analysis tasks in this challenging imaging modality.
 
@@ -126,8 +124,7 @@ Utilizes decoupled prediction heads for classification and localization to reduc
 
 \end{enumerate}
 
-YOLOv8 represents a paradigm shift in object detection, combining architectural refinements (CSPNet, FPN+PAN), training optimizations (anchor-free prediction, mixed precision), and developer-friendly tooling. In the context of our project, YOLOv8's ability to process 2D tomographic slices efficiently complements the 3D volumetric capabilities of Swin UNETR, enabling a robust pipeline for detecting bacterial flagellar motors in cryo-ET data. Its scalable variants and state-of-the-art performance on benchmarks like COCO and Roboflow 100 highlight its versatility, making it an ideal choice for applications requiring both speed and accuracy, such as our automated detection system for structural biology research.
-
+YOLOv8 represents a paradigm shift in object detection, combining architectural refinements (CSPNet, FPN+PAN), training optimizations (anchor-free prediction, mixed precision), and developer-friendly tooling. In the context of our project, YOLOv8's ability to process 2D tomographic slices efficiently complements the 3D volumetric capabilities of Swin UNETR, enabling a robust pipeline for detecting bacterial flagellar motors in cryo-ET data. Its scalable variants and state-of-the-art performance on benchmarks like COCO and Roboflow 100 highlight its versatility, making it an ideal choice for applications requiring both speed and accuracy.
 
 \subsection{3D object detection model: Swin UNEt TRansformers (Swin UNETR)}
 Swin UNETR (Swin UNEt TRansformers)\cite{Hatamizadeh2022SwinUS} is a 3D medical image segmentation model that integrates the hierarchical Swin Transformer as an encoder and a CNN-based decoder. It addresses the limitations of convolutional neural networks (CNNs) in modeling long-range dependencies and achieves state-of-the-art performance in tasks such as brain tumor segmentation. The model leverages shifted window-based self-attention and hierarchical feature fusion to balance global context modeling and local detail preservation.
@@ -220,6 +217,7 @@ Feature Reshaping:
 The symmetric decoder progressively recovers resolution while integrating multi-scale features through skip connections.
 \end{enumerate}
 
+Swin UNETR's 3D spatial advantages were limited by GPU memory constraints, requiring tomogram partitioning that disrupted spatial continuity. Transforming motor coordinates into heatmaps added noise, misaligning with the project's detection focus.
 
 
 \section{Implementation}
@@ -232,7 +230,8 @@ This dataset supports 3D biomedical image analysis, specifically for locating su
 
 \subsection{Data preprocessing}
 \subsubsection{Data visualization}
-To effectively process the tomogram data, we first conducted comprehensive visualization and examination. This revealed challenging characteristics including varying contrast levels, significant noise, and inconsistent motor appearances across different tomographic planes. Figure \ref{fig:sample_slices} displays representative slices from the training dataset, highlighting the diversity in image quality and structural clarity that our models needed to accommodate.
+To effectively process the tomogram data, we first conducted comprehensive visualization and examination.
+Figure \ref{fig:sample_slices} displays representative slices from the training dataset, highlighting the diversity in image quality and structural clarity that our models needed to accommodate.
 
 \begin{figure}[htb]
     \centering
@@ -241,7 +240,7 @@ To effectively process the tomogram data, we first conducted comprehensive visua
     \label{fig:sample_slices}
 \end{figure}
 
-Our analysis involved examining the statistical distributions of key features across the dataset. Figure \ref{fig:feature_distributions} illustrates the distributions of motor coordinates and tomogram dimensions, revealing important characteristics that informed our modeling approach.
+My analysis involved examining the statistical distributions of key features across the dataset. Figure \ref{fig:feature_distributions} illustrates the distributions of motor coordinates and tomogram dimensions, revealing important characteristics that informed our modeling approach.
 
 \begin{figure}[htb]
     \centering
@@ -254,10 +253,9 @@ Our analysis involved examining the statistical distributions of key features ac
 Further quantitative analysis revealed several important dataset characteristics:
 
 \begin{enumerate}
-    \item \textbf{Label completeness}: As shown in Table \ref{tab:sample_labels}, the training labels provide comprehensive information including tomogram identifiers, 3D motor coordinates, and voxel spacing. The value "-1.0" indicates tomograms without motors.
-    \item \textbf{Data integrity}: No missing values were detected across all columns, confirming high data quality.
+    \item \textbf{Label quality}: Table \ref{tab:sample_labels} highlights the detailed training labels, which include tomogram IDs, precise 3D motor coordinates, and voxel spacing, ensuring comprehensive annotation for model training.
     \item \textbf{Dimensional variation}: Tomogram dimensions varied considerably across the dataset—Z-axis (slice count): 300-800, X-axis (width): 924-1912, and Y-axis (height): 924-1847—necessitating adaptive processing strategies.
-    \item \textbf{Resolution diversity}: Table \ref{tab:voxel_spacing} summarizes the distribution of voxel spacing values, with 13.1Å, 15.6Å, and 19.7Å being most prevalent, indicating varying levels of detail across samples.
+    \item \textbf{Resolution diversity}: Distribution of voxel spacing in Figure \ref{fig:feature_distributions} summarizes the distribution of voxel spacing values, with 13.1, 15.6, and 19.7 being most prevalent, indicating varying levels of detail across samples.
 \end{enumerate}
 
 \begin{table}[htb]
@@ -277,28 +275,6 @@ Further quantitative analysis revealed several important dataset characteristics
     \end{tabular}
     }
     \label{tab:sample_labels}
-\end{table}
-
-\begin{table}[htb]
-    \centering
-    \caption{Distribution of voxel spacing values across the dataset}
-    \begin{tabular}{lc}
-        \toprule
-        Voxel Spacing & Count \\
-        \midrule
-        6.5  & 3   \\
-        13.1 & 291 \\
-        13.2 & 2   \\
-        13.3 & 18  \\
-        15.6 & 177 \\
-        16.1 & 40  \\
-        16.8 & 85  \\
-        19.2 & 7   \\
-        19.3 & 10  \\
-        19.7 & 104 \\
-        \bottomrule
-    \end{tabular}
-    \label{tab:voxel_spacing}
 \end{table}
 
 This analysis informed our subsequent preprocessing decisions, particularly regarding normalization strategies and model input dimensionality requirements.
@@ -335,13 +311,13 @@ This statistical analysis revealed several important insights:
     \item \textbf{Spatial distribution}: Analysis of motor positions revealed no strong spatial bias, with motors distributed throughout the volume space, though slightly favoring central regions.
 \end{enumerate}
 
-To understand feature relationships, we computed correlations between key variables using Pearson's correlation coefficient. The results, shown in Table \ref{tab:correlation_matrix}, indicate weak correlations between motor coordinates and tomogram dimensions, suggesting that motor localization is not strongly influenced by tomogram size.
+To understand feature relationships, we computed correlations between key variables using Pearson's correlation coefficient. The results, shown in Figure \ref{Fig:correlation_matrix}, indicate weak correlations between motor coordinates and tomogram dimensions, suggesting that motor localization is not strongly influenced by tomogram size.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.48\textwidth]{images/correlation_heatmap.png}
     \caption{Correlation matrix of key dataset features}
-    \label{tab:correlation_matrix}
+    \label{Fig:correlation_matrix}
 \end{figure}
 
 
@@ -355,13 +331,12 @@ To train our YOLO-based motor detection model, we developed a robust data prepro
 \subsubsection{Model training}
 To train the YOLOv8 model for detecting bacterial flagellar motors, we utilized transfer learning by fine-tuning the pretrained YOLOv8n (nano) model, which is optimized for lightweight applications and faster inference. The training process was configured with the following key parameters:
 
-\begin{itemize}
-    \item \textbf{Dataset Configuration:} The dataset was specified using a YAML file, which defined the paths to the training and validation datasets, class labels, and other metadata.
+\begin{enumerate}
     \item \textbf{Pretrained Weights:} We initialized the model with pretrained weights, leveraging its robust feature extraction capabilities for object detection tasks.
     \item \textbf{Epochs:} The model was trained for 100 epochs to ensure convergence while avoiding overfitting.
     \item \textbf{Batch Size:} A batch size of 16 was chosen to balance memory usage and training stability.
     \item \textbf{Image Size:} Input images were resized to 640x640 pixels, maintaining a balance between computational efficiency and detection accuracy.
-\end{itemize}
+\end{enumerate}
 
 The training process involved optimizing the model using the Adam optimizer with a learning rate scheduler to adaptively adjust the learning rate. Advanced data augmentation techniques, such as mosaic and mixup, were applied to enhance the model's generalization capabilities.
 
@@ -377,12 +352,7 @@ The results of the training process were visualized, as shown in Figure \ref{fig
 \subsection{3D model Swin UNETR implementation}
 
 \subsubsection{Dataset preparation}
-To prepare the dataset for the 3D Swin UNETR model, we implemented a detailed preprocessing pipeline to convert raw tomographic data into NIfTI (.nii.gz) format, organizing it for volumetric analysis. 
-The raw data, consisting of 3D tomograms represented as stacks of 2D JPEG slices, was processed by loading and stacking slices along the Z-axis to form a 3D array while preserving the volumetric structure. 
-Each slice was normalized using the 2nd and 98th percentiles of pixel intensity values to enhance contrast and reduce the impact of outliers, ensuring consistent intensity scaling across the dataset. The motor coordinates provided in the dataset were normalized relative to the tomogram dimensions, representing them as fractions of the tomogram size to ensure invariance to dimensional variations. 
-A 3D heatmap was generated for each tomogram to represent motor locations, where Gaussian filters created smooth, localized peaks at motor positions, serving as ground truth labels for the model. Tomograms and corresponding heatmaps were cropped around motor locations and resized to a fixed size of \(96 \times 96 \times 96\) voxels, ensuring uniform input dimensions while dynamically adjusting cropping regions to remain within tomogram bounds. 
-Finally, data augmentation techniques, including random flipping along spatial axes, random rotations, and intensity scaling, were applied to simulate variability in tomogram acquisition conditions and enhance model generalization. 
-The processed data can be visualized in 3D using the open-source Niivue library as shown in Figure \ref{fig:3d_visualization}.
+To prepare the dataset for the 3D Swin UNETR model, we converted raw tomograms (2D JPEG stacks) into NIfTI (.nii.gz) format. Slices were stacked along the Z-axis to form 3D arrays, normalized using the 2nd and 98th percentiles for consistent intensity scaling. Motor coordinates were normalized relative to tomogram dimensions and converted into 3D heatmaps with Gaussian peaks at motor positions. Tomograms and heatmaps were cropped and resized to \(96 \times 96 \times 96\) voxels for uniform input. Data augmentation, including random flips, rotations, and intensity scaling, was applied to enhance generalization. The processed data can be visualized in 3D using NiiVUE, as shown in Figure \ref{fig:3d_visualization}.
 
 \begin{figure}[htb]
     \centering
@@ -392,16 +362,14 @@ The processed data can be visualized in 3D using the open-source Niivue library 
 \end{figure}
 
 \subsubsection{Model training}
-To train the Swin UNETR model for detecting bacterial flagellar motors in 3D tomograms, we implemented a comprehensive training pipeline leveraging the MONAI framework. The training process was configured with the following key parameters:
+To train the Swin UNETR model for detecting bacterial flagellar motors in 3D tomograms, we implemented a comprehensive training pipeline leveraging the MONAI framework\cite{Cardoso2022MONAIAO}. The training process was configured with the following key parameters:
 
-\begin{itemize}
-    \item \textbf{Dataset Configuration:} The dataset was prepared in NIfTI format, with separate directories for training and validation data. Each sample consisted of a 3D tomogram and its corresponding heatmap label.
-    \item \textbf{Model Architecture:} The Swin UNETR model was initialized with a hierarchical Swin Transformer encoder and a CNN-based decoder, optimized for volumetric segmentation tasks.
+\begin{enumerate}
     \item \textbf{Loss Function:} Mean Squared Error (MSE) loss was used to measure the difference between predicted heatmaps and ground truth labels, ensuring precise localization of motor centers.
     \item \textbf{Optimizer:} The AdamW optimizer was employed with a learning rate of $1 \times 10^{-4}$ and weight decay of $1 \times 10^{-5}$ to balance convergence speed and generalization.
     \item \textbf{Batch Size:} A batch size of 8 was chosen to maximize GPU utilization while maintaining stable training dynamics.
     \item \textbf{Training Duration:} The model was trained for 50 epochs, with validation performed after each epoch to monitor performance.
-\end{itemize}
+\end{enumerate}
 
 The training and validation loss curves, shown in Figures \ref{fig:training_loss} and \ref{fig:validation_loss}, demonstrate steady convergence. The training loss decreased rapidly during the initial epochs, stabilizing after approximately 10 epochs, while the validation loss followed a similar trend, indicating effective generalization.
 
@@ -463,38 +431,34 @@ Here, precision and recall are given by
 Table \ref{tab:combined_results} shows that YOLOv8 significantly outperformed Swin UNETR across all metrics. Several factors contributed to this performance gap:
 The original task involves detecting specific coordinate points rather than segmenting regions, which inherently favors detection frameworks like YOLOv8. For Swin UNETR implementation, motor coordinate labels had to be transformed into heatmap representations, introducing information distortion. This conversion process—where discrete coordinate points were expanded into Gaussian-centered distributions—created an artificial segmentation problem that deviated from Swin UNETR's optimal use case. The model had to learn to identify these artificially generated heatmap peaks rather than directly predicting coordinate locations.
 
-On the other hands, The computational requirements of the two models differed substantially:
-
-\begin{itemize}
-    \item \textbf{Parameter count}: Swin UNETR is significantly larger than YOLOv8n, requiring more data and computational resources for optimal training.
-    \item \textbf{Training approach}: YOLOv8 benefited from transfer learning, leveraging pre-trained weights that already encoded general visual features. In contrast, Swin UNETR was trained from scratch, requiring more epochs to develop effective feature representations.
-    \item \textbf{Training duration}: Due to GPU resource limitations, Swin UNETR was trained for only 50 epochs, likely insufficient for full convergence given its size and lack of pre-training.
-\end{itemize}
-
-Limited GPU memory significantly impacted the 3D approach:
-
-\begin{itemize}
-    \item \textbf{Volume partitioning}: The original tomographic volumes had to be divided into small ($96 \times 96 \times 96$ voxel) patches to fit in available GPU memory, fragmenting spatial context.
-    \item \textbf{Global context loss}: This partitioning eliminated important long-range dependencies and structural relationships that Swin UNETR was specifically designed to capture through its transformer architecture.
-    \item \textbf{Boundary artifacts}: Volume partitioning created artificial boundaries, potentially introducing edge artifacts that further complicated the learning process.
-\end{itemize}
-
-The nature of the task aligned more closely with YOLOv8's design principles:
-
-\begin{itemize}
-    \item \textbf{Problem formulation}: Flagellar motor detection fundamentally involves locating discrete points in 3D space, which maps cleanly to YOLO's object detection paradigm.
-    \item \textbf{Efficiency in 2D processing}: YOLOv8 efficiently processes individual 2D slices, requiring less memory while maintaining spatial context within each slice.
-    \item \textbf{Sparse annotation handling}: YOLO naturally handles sparse annotations (limited positive samples) through its objectness prediction mechanism, while Swin UNETR must learn to produce mostly-zero heatmaps with isolated peaks.
-\end{itemize}
-
-These results highlight that model selection should consider not only theoretical capabilities but also practical constraints of the specific task, available computational resources, and data representation format. While 3D models theoretically capture more complete spatial relationships in volumetric data, their benefits can be undermined by practical limitations in real-world implementation scenarios.
-
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.48\textwidth]{images/test_sample.png}
     \caption{Test sample with YOLOv8 predictions}
     \label{fig:test_sample}
 \end{figure}
+
+On the other hands, The computational requirements of the two models differed substantially:
+
+\begin{enumerate}
+    \item \textbf{Parameter count}: Swin UNETR is significantly larger than YOLOv8n, requiring more data and computational resources for optimal training.
+    \item \textbf{Training approach}: YOLOv8 benefited from transfer learning, leveraging pre-trained weights that already encoded general visual features. In contrast, Swin UNETR was trained from scratch, requiring more epochs to develop effective feature representations.
+    \item \textbf{Training duration}: Due to GPU resource limitations, Swin UNETR was trained for only 50 epochs, likely insufficient for full convergence given its size and lack of pre-training.
+\end{enumerate}
+
+Limited GPU memory significantly impacted the 3D approach, as the original tomographic volumes had to be divided into small ($96 \times 96 \times 96$ voxel) patches to fit in available GPU memory, which fragmented spatial context. This partitioning eliminated important long-range dependencies and structural relationships that Swin UNETR was specifically designed to capture through its transformer architecture. Additionally, the partitioning created artificial boundaries, potentially introducing edge artifacts that further complicated the learning process.
+
+% The nature of the task aligned more closely with YOLOv8's design principles:
+
+% \begin{itemize}
+%     \item \textbf{Problem formulation}: Flagellar motor detection fundamentally involves locating discrete points in 3D space, which maps cleanly to YOLO's object detection paradigm.
+%     \item \textbf{Efficiency in 2D processing}: YOLOv8 efficiently processes individual 2D slices, requiring less memory while maintaining spatial context within each slice.
+%     \item \textbf{Sparse annotation handling}: YOLO naturally handles sparse annotations (limited positive samples) through its objectness prediction mechanism, while Swin UNETR must learn to produce mostly-zero heatmaps with isolated peaks.
+% \end{itemize}
+
+These results highlight that model selection should consider not only theoretical capabilities but also practical constraints of the specific task, available computational resources, and data representation format. While 3D models theoretically capture more complete spatial relationships in volumetric data, their benefits can be undermined by practical limitations in real-world implementation scenarios.
+
+
 
 \section{Conclusion}
 \label{sec:conc}

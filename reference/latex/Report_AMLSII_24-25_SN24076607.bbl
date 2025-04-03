@@ -45,6 +45,13 @@ Glenn Jocher, Ayush Chaurasia, Alex Stoken, Jirka Borovec, NanoCode012, Yonghye
 \newblock ``Ultralytics/yolov5: V7.0 - {{YOLOv5 SOTA Realtime Instance
   Segmentation}},'' Nov. 2022.
 
+\bibitem{Hatamizadeh2022SwinUS}
+Ali Hatamizadeh, V.~Nath, Yucheng Tang, Dong Yang, Holger~R. Roth, and Daguang
+  Xu,
+\newblock ``Swin unetr: Swin transformers for semantic segmentation of brain
+  tumors in mri images,''
+\newblock {\em ArXiv}, vol. abs/2201.01266, 2022.
+
 \bibitem{cicek3DUNetLearning2016}
 {\"O}zg{\"u}n {\c C}i{\c c}ek, Ahmed Abdulkadir, Soeren~S. Lienkamp, Thomas
   Brox, and Olaf Ronneberger,
@@ -106,13 +113,6 @@ Seyed~Hamid Rezatofighi, Nathan Tsoi, JunYoung Gwak, Amir Sadeghian, Ian~D.
 \newblock {\em 2019 IEEE/CVF Conference on Computer Vision and Pattern
   Recognition (CVPR)}, pp. 658--666, 2019.
 
-\bibitem{Hatamizadeh2022SwinUS}
-Ali Hatamizadeh, V.~Nath, Yucheng Tang, Dong Yang, Holger~R. Roth, and Daguang
-  Xu,
-\newblock ``Swin unetr: Swin transformers for semantic segmentation of brain
-  tumors in mri images,''
-\newblock {\em ArXiv}, vol. abs/2201.01266, 2022.
-
 \bibitem{Vaswani2017AttentionIA}
 Ashish Vaswani, Noam~M. Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
   Aidan~N. Gomez, Lukasz Kaiser, and Illia Polosukhin,
@@ -124,5 +124,22 @@ Dmitry Ulyanov, Andrea Vedaldi, and Victor~S. Lempitsky,
 \newblock ``Instance normalization: The missing ingredient for fast
   stylization,''
 \newblock {\em ArXiv}, vol. abs/1607.08022, 2016.
+
+\bibitem{Cardoso2022MONAIAO}
+Manuel~Jorge Cardoso, Wenqi Li, Richard Brown, Nic Ma, Eric Kerfoot, Yiheng
+  Wang, Benjamin Murrey, Andriy Myronenko, Can Zhao, Dong Yang, V.~Nath, Yufan
+  He, Ziyue Xu, Ali Hatamizadeh, Wenjie Zhu, Yun Liu, Mingxin Zheng, Yucheng
+  Tang, Isaac Yang, Michael Zephyr, Behrooz Hashemian, Sachidanand Alle,
+  Mohammad~Zalbagi Darestani, Charles. Budd, Marc Modat, Tom Kamiel~Magda
+  Vercauteren, Guotai Wang, Yiwen Li, Yipeng Hu, Yunguan Fu, Benjamin~L.
+  Gorman, Hans~J. Johnson, Brad~W. Genereaux, Barbaros~Selnur Erdal, Vikash
+  Gupta, Andr{\'e}s Diaz-Pinto, Andre Dourson, Lena Maier-Hein, Paul~F. Jaeger,
+  Michael Baumgartner, Jayashree Kalpathy-Cramer, Mona~G. Flores, Justin~S.
+  Kirby, Lee Alex~Donald Cooper, Holger~R. Roth, Daguang Xu, David Bericat,
+  Ralf~O. Floca, S.~Kevin Zhou, Haris Shuaib, Keyvan Farahani, Klaus~H.
+  Maier-Hein, Stephen Aylward, Prerna Dogra, S{\'e}bastien Ourselin, and Andrew
+  Feng,
+\newblock ``Monai: An open-source framework for deep learning in healthcare,''
+\newblock {\em ArXiv}, vol. abs/2211.02701, 2022.
 
 \end{thebibliography}
