@@ -9,11 +9,11 @@ paths:
   model_dir: 'models'
   # yolo dir
   yolo_dataset_dir: 'Datasets/yolo_dataset'
-  yolo_model_dir: 'models/yolo_v8'
+  yolo_model_dir: 'src/models/yolo_v8'
   yolo_weights: 'yolo_weights'
-  yolo_best_model_dir: 'models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/weights/best.pt'
+  yolo_best_model_dir: 'src/models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/weights/best.pt'
   # 3dunet dir
-  3dunet_model_dir: 'models/3dunet'
+  3dunet_model_dir: 'src/models/3dunet'
   3dunet_dataset_dir: 'Datasets/3dunet_dataset_heatmap'
   3dunet_output_dir: 'outputs/3dunet'
 

@@ -1,10 +1,13 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from imports import *
+import torch
+import random
+import numpy as np
+import yaml
 
 class Config:
-    def __init__(self, config_path='config/config.yaml'):
+    def __init__(self, config_path='src/config/config.yaml'):
         # 加载配置文件
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)

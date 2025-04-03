@@ -172,8 +172,8 @@ cython_debug/
 
 byu-locating-bacterial-flagellar-motors-2025/
 yolo_dataset/
-models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/
+src/models/yolo_v8/yolo_weights/yolov8_motor_detector_epoch100_batchsize16/
 3dunet_dataset/
 3dunet_dataset_heatmap/
 outputs/3dunet/
-models/3dunet/best_metric_model.pth
+src/models/3dunet/best_metric_model.pth
