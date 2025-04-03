@@ -32,7 +32,7 @@ jobs:
         
     - name: Install dependencies from lock file
       run: |
-        uv pip install -r uv.lock
+        uv pip install .
         
     - name: Verify imports
       run: |
