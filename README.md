@@ -93,12 +93,7 @@ pip install uv
 uv venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
-### Using uv.lock (Recommended)
-```bash
-uv pip install -r uv.lock # Install dependencies from lock file (for reproducible environment)
-```
-
-### or Install dependencies using pyproject.toml
+### Install dependencies using pyproject.toml
 ```bash
 uv pip install . # Install dependencies using pyproject.toml (automatically generates uv.lock)
 ```
