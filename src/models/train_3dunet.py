@@ -40,6 +40,7 @@ def import_dataset(data_path = config.DATA_DIR, train_dir = config.TRAIN_DIR,tra
                    unet_dataset_dir=config.UNET_DATAESET_DIR, unet_images_train=config.UNET_IMAGES_TRAIN,
                    unet_images_val=config.UNET_IMAGES_VAL,
                    unet_labels_train=config.UNET_LABELS_TRAIN, unet_labels_val=config.UNET_LABELS_VAL):
+    
     # Load the labels CSV
     labels_df = pd.read_csv(os.path.join(data_path, "train_labels.csv"))
     
@@ -69,6 +70,7 @@ def import_dataset(data_path = config.DATA_DIR, train_dir = config.TRAIN_DIR,tra
 
 # Helper function to process a list of tomograms
 def process_tomogram_set(tomogram_ids,images_dir, labels_dir, set_name,labels_df):
+
     motor_counts = []
     for tomo_id in tomogram_ids:
         now_motor_counts = [] #用来保存location的数组
@@ -98,6 +100,40 @@ def process_tomogram_set(tomogram_ids,images_dir, labels_dir, set_name,labels_df
                 print(f"Error in processing tomogram: {e}")
 
 def process_single_tomogram(tomo_id, location, shape, images_dir, labels_dir):
+    """
+    Processes a single tomogram by normalizing slices, generating a heatmap, 
+    and cropping regions of interest around specified locations. The cropped 
+    images and heatmaps are saved as NIfTI files.
+    Args:
+        tomo_id (str): Identifier for the tomogram being processed.
+        location (list of tuples): List of normalized coordinates (z, x, y) 
+            indicating points of interest within the tomogram.
+        shape (tuple): Shape of the tomogram in the format (depth, height, width).
+        images_dir (str): Directory where cropped image NIfTI files will be saved.
+        labels_dir (str): Directory where cropped heatmap NIfTI files will be saved.
+    Workflow:
+        1. Iterates through slices of the tomogram, normalizes them, and stacks them.
+        2. Generates a heatmap based on the normalized locations.
+        3. For each location, crops a 3D region of interest around the point.
+        4. Saves the cropped image stack and heatmap as NIfTI files if the crop 
+           matches the expected size.
+    Notes:
+        - If a slice file does not exist, it is skipped with a warning.
+        - Cropping ensures the region does not exceed tomogram boundaries.
+        - Memory is managed by explicitly deleting variables and invoking garbage collection.
+    Raises:
+        FileNotFoundError: If the specified directories for saving files do not exist.
+        ValueError: If the input parameters are invalid or inconsistent.
+    Example:
+        process_single_tomogram(
+            tomo_id="tomo_001",
+            location=[(0.5, 0.5, 0.5)],
+            shape=(128, 256, 256),
+            images_dir="/path/to/images",
+            labels_dir="/path/to/labels"
+        )
+    """
+
     slice_images = []
     for z in range(shape[0]):
         slice_filename = f"slice_{z:04d}.jpg"

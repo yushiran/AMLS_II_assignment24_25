@@ -79,6 +79,25 @@ def score(solution: pd.DataFrame, submission: pd.DataFrame, min_radius: float, b
 
 
 def parse_csvpath_pd(submission_path: str, solution_path: str):
+    """
+    Parses and processes two CSV files (submission and solution) into pandas DataFrames, ensuring compatibility 
+    and preparing them for further analysis.
+    Args:
+        submission_path (str): The file path to the submission CSV file.
+        solution_path (str): The file path to the solution CSV file.
+    Returns:
+        tuple: A tuple containing two pandas DataFrames:
+            - solution (pd.DataFrame): Processed solution DataFrame with columns:
+                'tomo_id', 'Motor axis 0', 'Motor axis 1', 'Motor axis 2', 'Voxel spacing', and 'Has motor'.
+                The 'Has motor' column indicates whether a motor is present (1) or not (0) based on the motor axis values.
+            - submission (pd.DataFrame): Processed submission DataFrame with columns:
+                'tomo_id', 'Motor axis 0', 'Motor axis 1', 'Motor axis 2'.
+    Notes:
+        - The function ensures that the 'tomo_id' columns in both DataFrames are of the same type (string).
+        - The solution and submission DataFrames are merged on the 'tomo_id' column.
+        - The 'Has motor' column in the solution DataFrame is computed based on whether any of the motor axis values are -1.
+    """
+
     submission = pd.read_csv(submission_path)
     solution = pd.read_csv(solution_path)
 

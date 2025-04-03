@@ -149,6 +149,24 @@ def prepare_yolo_dataset(trust=4, train_split=0.8, box_size = 24,
 
 
 def create_yolo_dataset():
+    """
+    Prepares a YOLO dataset by creating necessary directories, defining constants, 
+    and running the preprocessing pipeline.
+    The function performs the following steps:
+    1. Creates directories for YOLO training and validation images and labels.
+    2. Defines constants for the number of slices, bounding box size, and train-validation split ratio.
+    3. Calls the `prepare_yolo_dataset` function to preprocess the data and generate the YOLO dataset.
+    Outputs:
+    - Prints a summary of the preprocessing results, including the number of tomograms, motors, 
+      and slices in the training and validation datasets.
+    - Displays the dataset directory and YAML configuration file path.
+    Note:
+    - Ensure that the `config` module is properly configured with paths and constants 
+      before calling this function.
+    - The `prepare_yolo_dataset` function must be implemented and handle the actual 
+      preprocessing logic.
+    """
+
     # Create necessary directories
     for dir_path in [config.YOLO_IMAGES_TRAIN, config.YOLO_IMAGES_VAL, config.YOLO_LABELS_TRAIN, config.YOLO_LABELS_VAL]:
         os.makedirs(dir_path, exist_ok=True)

@@ -5,6 +5,31 @@ from imports import *
 from glob import glob
 
 def create_animation(df, tomo_id, fps=20, imsize=384, frame_skip=1, save_as_gif=False, save_dir="./"):
+    """
+    Creates an animation from a series of images and annotations for a given tomogram ID.
+    Args:
+        df (pd.DataFrame): DataFrame containing metadata and annotations for the tomograms.
+            Must include columns such as 'tomo_id', 'Array shape (axis 1)', 'Array shape (axis 2)', 
+            'Voxel spacing', and motor axis coordinates ('Motor axis 0', 'Motor axis 1', 'Motor axis 2').
+        tomo_id (str): Identifier for the tomogram to process.
+        fps (int, optional): Frames per second for the animation. Defaults to 20.
+        imsize (int, optional): Size (in pixels) to resize the images to. Defaults to 384.
+        frame_skip (int, optional): Number of frames to skip when creating the animation. 
+            If set to 0, it will automatically skip frames to limit the animation to 100 frames. Defaults to 1.
+        save_as_gif (bool, optional): Whether to save the animation as a GIF. Defaults to False.
+        save_dir (str, optional): Directory to save the GIF if `save_as_gif` is True. Defaults to "./".
+    Returns:
+        matplotlib.animation.FuncAnimation: The generated animation object.
+    Notes:
+        - The function reads image and annotation files from directories specified in `config.DATA_DIR`.
+        - Images and annotations are resized to the specified `imsize` while maintaining aspect ratio.
+        - Motor annotations are visualized as circles on the images, with their size determined by voxel spacing.
+        - If `save_as_gif` is True, the animation is saved as a GIF using the ImageMagick writer.
+    Raises:
+        FileNotFoundError: If image or annotation files are not found in the specified directories.
+        ValueError: If the DataFrame does not contain the required columns.
+    """
+   
     # Get paths
     img_paths = sorted(glob(f"{config.DATA_DIR}/train/{tomo_id}/*"))
     annot_paths = sorted(glob(f"{config.DATA_DIR}/train/{tomo_id}/*"))
@@ -86,6 +111,34 @@ def create_animation(df, tomo_id, fps=20, imsize=384, frame_skip=1, save_as_gif=
     return anim
 
 def create_animation_images(df, tomo_id, n_images=16, imsize=384, save_dir="./"):
+    """
+    Generate and save an image matrix visualization for a given tomogram ID.
+    This function processes a set of images corresponding to a tomogram ID, 
+    annotates motor positions on the images, and arranges a subset of the 
+    images into a grid layout. The resulting image matrix is saved as a PNG file.
+    Args:
+        df (pd.DataFrame): A DataFrame containing metadata about the tomograms, 
+            including motor positions and voxel spacing.
+        tomo_id (str): The identifier for the tomogram to process.
+        n_images (int, optional): The number of images to include in the matrix. 
+            Defaults to 16.
+        imsize (int, optional): The size (width and height) to which each image 
+            will be resized. Defaults to 384.
+        save_dir (str, optional): The directory where the resulting image matrix 
+            will be saved. Defaults to "./".
+    Returns:
+        None: The function saves the image matrix to the specified directory 
+        and does not return any value.
+    Notes:
+        - The function ensures that frames with motor annotations are included 
+          in the image matrix.
+        - Images are normalized and resized before being processed.
+        - Motor positions are annotated as circles on the images, with the 
+          radius calculated based on voxel spacing and resizing ratios.
+    Example:
+        create_animation_images(df, tomo_id="tomo_001", n_images=9, imsize=256, save_dir="./output")
+    """
+    
     # Get paths
     img_paths = sorted(glob(f"{config.DATA_DIR}/train/{tomo_id}/*"))
 

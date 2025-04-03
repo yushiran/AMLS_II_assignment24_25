@@ -7,6 +7,54 @@ import numpy as np
 import yaml
 
 class Config:
+    """
+    Config class for managing project configurations and paths.
+    This class is responsible for loading configuration settings from a YAML file,
+    initializing directory paths, setting up random seeds, and configuring device
+    settings for training and inference.
+    Attributes:
+        BASE_DIR (str): Base directory for the project.
+        DATA_DIR (str): Directory for storing data.
+        TRAIN_CSV (str): Path to the training CSV file.
+        TRAIN_DIR (str): Directory for training data.
+        TEST_DIR (str): Directory for test data.
+        OUTPUT_DIR (str): Directory for storing output files.
+        MODEL_DIR (str): Directory for storing models.
+        SUBMISSION_DIR (str): Directory for storing submission files.
+        YOLO_DATAESET_DIR (str): Directory for YOLO dataset.
+        YOLO_IMAGES_TRAIN (str): Directory for YOLO training images.
+        YOLO_IMAGES_VAL (str): Directory for YOLO validation images.
+        YOLO_LABELS_TRAIN (str): Directory for YOLO training labels.
+        YOLO_LABELS_VAL (str): Directory for YOLO validation labels.
+        YOLO_MODEL_DIR (str): Directory for YOLO model files.
+        YOLO_WEIGHTS_DIR (str): Directory for YOLO weights.
+        YOLO_BEST_MODEL_DIR (str): Directory for the best YOLO model.
+        UNET_MODEL_DIR (str): Directory for 3D UNet model files.
+        UNET_DATAESET_DIR (str): Directory for 3D UNet dataset.
+        UNET_IMAGES_TRAIN (str): Directory for 3D UNet training images.
+        UNET_IMAGES_VAL (str): Directory for 3D UNet validation images.
+        UNET_LABELS_TRAIN (str): Directory for 3D UNet training labels.
+        UNET_LABELS_VAL (str): Directory for 3D UNet validation labels.
+        UNET_OUTPUT_DIR (str): Directory for 3D UNet output files.
+        RANDOM_SEED (int): Random seed for reproducibility.
+        DEVICE (str): Device to use for computation ('cuda:0' or 'cpu').
+        INFER_BATCH_SIZE (int): Batch size for inference.
+        CONFIFENCE_THRESHOLD (float): Confidence threshold for inference.
+        MAX_DETECTIONS_PER_TOMO (int): Maximum detections per tomogram.
+        NMS_IOU_THRESHOLD (float): Non-maximum suppression IoU threshold.
+        CONCENTRATION (float): Fraction of slices to process for fast submission.
+    Methods:
+        __init__(config_path='src/config/config.yaml'):
+            Initializes the Config object by loading the YAML configuration file,
+            setting up paths, creating necessary directories, and configuring device
+            and random seed settings.
+        set_seed(seed):
+            Sets the random seed for reproducibility across Python, NumPy, and PyTorch.
+    Note:
+        Ensure that the YAML configuration file exists at the specified path and
+        contains the required keys for paths and parameters.
+    """
+
     def __init__(self, config_path='src/config/config.yaml'):
         # Load configuration file
         with open(config_path, 'r') as f:
