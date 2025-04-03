@@ -1,0 +1,82 @@
+name: Environment Setup Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  test-environment-setup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install uv
+      run: |
+        pip install uv
+        
+    - name: Create and activate virtual environment
+      run: |
+        uv venv .venv
+        echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/.venv" >> $GITHUB_ENV
+        echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+        
+    - name: Install dependencies from lock file
+      run: |
+        uv pip install -r uv.lock
+        
+    - name: Verify imports
+      run: |
+        # Test importing key packages
+        python -c "import torch; import monai; import ultralytics; import nibabel; print('Key packages imported successfully')"
+        
+    - name: Create mock dataset structure
+      run: |
+        # Create minimal mock dataset structure for testing
+        mkdir -p Datasets/byu-locating-bacterial-flagellar-motors-2025/train
+        mkdir -p Datasets/byu-locating-bacterial-flagellar-motors-2025/test
+        touch Datasets/byu-locating-bacterial-flagellar-motors-2025/train_labels.csv
+        touch Datasets/byu-locating-bacterial-flagellar-motors-2025/sample_submission.csv
+        
+    - name: Set up config file
+      run: |
+        # Create or modify config with GitHub workspace path
+        mkdir -p src/config
+        echo "paths:" > src/config/config.yaml
+        echo "  base_dir: '$GITHUB_WORKSPACE'" >> src/config/config.yaml
+        
+    - name: Run minimal test
+      run: |
+        # Create a minimal test script that doesn't need the full dataset
+        cat << EOF > test_environment.py
+        import sys
+        from pathlib import Path
+
+        # Add project root to path
+        sys.path.append('.')
+
+        try:
+            # Test imports from your project
+            from src.imports import *
+            from src.config.config import load_config
+            
+            # Load config
+            config = load_config()
+            
+            print("Environment setup successful!")
+            sys.exit(0)
+        except Exception as e:
+            print(f"Environment setup failed: {e}")
+            sys.exit(1)
+        EOF
+        
+        python test_environment.py
