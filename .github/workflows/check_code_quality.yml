@@ -1,0 +1,179 @@
+name: Code Quality Assessment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  assess-code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install quality tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pylint black mypy isort bandit
+        pip install uv
+        uv pip install -r uv.lock
+        
+    - name: Check code formatting with Black
+      id: black
+      run: |
+        BLACK_OUTPUT=$(black --check --diff src/ || true)
+        echo "BLACK_SCORE=$(if [ -z "$BLACK_OUTPUT" ]; then echo "10/10"; else echo "$(( 10 - $(echo "$BLACK_OUTPUT" | grep -c "would be reformatted") ))/10"; fi)" >> $GITHUB_ENV
+        echo "::group::Black Output"
+        echo "$BLACK_OUTPUT"
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: Check imports with isort
+      id: isort
+      run: |
+        ISORT_OUTPUT=$(isort --check --diff src/ || true)
+        echo "ISORT_SCORE=$(if [ -z "$ISORT_OUTPUT" ]; then echo "10/10"; else echo "$(( 10 - $(echo "$ISORT_OUTPUT" | grep -c "ERROR") ))/10"; fi)" >> $GITHUB_ENV
+        echo "::group::isort Output"
+        echo "$ISORT_OUTPUT"
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: Lint with flake8
+      id: flake8
+      run: |
+        FLAKE8_OUTPUT=$(flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics || true)
+        ERROR_COUNT=$(echo "$FLAKE8_OUTPUT" | tail -n1 | grep -o '[0-9]\+' || echo "0")
+        if [ "$ERROR_COUNT" -gt "10" ]; then
+          FLAKE8_SCORE="0/10"
+        else
+          FLAKE8_SCORE="$(( 10 - $ERROR_COUNT ))/10"
+        fi
+        echo "FLAKE8_SCORE=$FLAKE8_SCORE" >> $GITHUB_ENV
+        echo "::group::Flake8 Output"
+        echo "$FLAKE8_OUTPUT"
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: Analyze with pylint
+      id: pylint
+      run: |
+        PYLINT_OUTPUT=$(pylint src/ --disable=C0111,C0103,C0303,W0621,C0301,W0612,W0611 || true)
+        PYLINT_SCORE=$(echo "$PYLINT_OUTPUT" | grep -o "Your code has been rated at [0-9.]\+" | grep -o "[0-9.]\+" || echo "0.0")
+        echo "PYLINT_SCORE=$PYLINT_SCORE/10" >> $GITHUB_ENV
+        echo "::group::Pylint Output"
+        echo "$PYLINT_OUTPUT"
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: Security check with bandit
+      id: bandit
+      run: |
+        BANDIT_OUTPUT=$(bandit -r src/ || true)
+        ISSUES=$(echo "$BANDIT_OUTPUT" | grep -c "Issue:" || echo "0")
+        if [ "$ISSUES" -gt "10" ]; then
+          BANDIT_SCORE="0/10"
+        else
+          BANDIT_SCORE="$(( 10 - $ISSUES ))/10"
+        fi
+        echo "BANDIT_SCORE=$BANDIT_SCORE" >> $GITHUB_ENV
+        echo "::group::Bandit Output"
+        echo "$BANDIT_OUTPUT"
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: Type checking with mypy
+      id: mypy
+      run: |
+        MYPY_OUTPUT=$(mypy src/ || true)
+        ERROR_COUNT=$(echo "$MYPY_OUTPUT" | grep -c "error:" || echo "0")
+        if [ "$ERROR_COUNT" -gt "10" ]; then
+          MYPY_SCORE="0/10"
+        else
+          MYPY_SCORE="$(( 10 - $ERROR_COUNT ))/10"
+        fi
+        echo "MYPY_SCORE=$MYPY_SCORE" >> $GITHUB_ENV
+        echo "::group::MyPy Output"
+        echo "$MYPY_OUTPUT"
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: Generate code quality report
+      run: |
+        echo "# Code Quality Report" > code_quality_report.md
+        echo "" >> code_quality_report.md
+        echo "## Summary" >> code_quality_report.md
+        echo "" >> code_quality_report.md
+        echo "| Tool | Score | Description |" >> code_quality_report.md
+        echo "|------|-------|-------------|" >> code_quality_report.md
+        echo "| Black | ${{ env.BLACK_SCORE }} | Code formatting |" >> code_quality_report.md
+        echo "| isort | ${{ env.ISORT_SCORE }} | Import organization |" >> code_quality_report.md
+        echo "| Flake8 | ${{ env.FLAKE8_SCORE }} | Style guide enforcement |" >> code_quality_report.md
+        echo "| Pylint | ${{ env.PYLINT_SCORE }} | Code analysis |" >> code_quality_report.md
+        echo "| Bandit | ${{ env.BANDIT_SCORE }} | Security analysis |" >> code_quality_report.md
+        echo "| MyPy | ${{ env.MYPY_SCORE }} | Type checking |" >> code_quality_report.md
+        echo "" >> code_quality_report.md
+        
+        # Calculate overall score (average of all scores)
+        BLACK_NUM=$(echo ${{ env.BLACK_SCORE }} | cut -d'/' -f1)
+        ISORT_NUM=$(echo ${{ env.ISORT_SCORE }} | cut -d'/' -f1)
+        FLAKE8_NUM=$(echo ${{ env.FLAKE8_SCORE }} | cut -d'/' -f1)
+        PYLINT_NUM=$(echo ${{ env.PYLINT_SCORE }} | cut -d'/' -f1)
+        BANDIT_NUM=$(echo ${{ env.BANDIT_SCORE }} | cut -d'/' -f1)
+        MYPY_NUM=$(echo ${{ env.MYPY_SCORE }} | cut -d'/' -f1)
+        
+        OVERALL_SCORE=$(( (BLACK_NUM + ISORT_NUM + FLAKE8_NUM + ${PYLINT_NUM%.*} + BANDIT_NUM + MYPY_NUM) / 6 ))
+        echo "## Overall Score: $OVERALL_SCORE/10" >> code_quality_report.md
+        echo "" >> code_quality_report.md
+        
+        echo "## Recommendations" >> code_quality_report.md
+        echo "" >> code_quality_report.md
+        if [ "$BLACK_NUM" -lt "8" ]; then
+          echo "- **Formatting**: Run \`black src/\` to fix code formatting issues." >> code_quality_report.md
+        fi
+        if [ "$ISORT_NUM" -lt "8" ]; then
+          echo "- **Imports**: Run \`isort src/\` to organize import statements." >> code_quality_report.md
+        fi
+        if [ "$FLAKE8_NUM" -lt "8" ]; then
+          echo "- **Style**: Address the Flake8 errors to improve code style." >> code_quality_report.md
+        fi
+        if [ "${PYLINT_NUM%.*}" -lt "8" ]; then
+          echo "- **Code Quality**: Review Pylint suggestions to improve overall code quality." >> code_quality_report.md
+        fi
+        if [ "$BANDIT_NUM" -lt "8" ]; then
+          echo "- **Security**: Address the security issues identified by Bandit." >> code_quality_report.md
+        fi
+        if [ "$MYPY_NUM" -lt "8" ]; then
+          echo "- **Type Hints**: Add proper type hints to improve code maintainability." >> code_quality_report.md
+        fi
+        
+        cat code_quality_report.md
+        
+    - name: Upload code quality report
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-quality-report
+        path: code_quality_report.md
+        
+    - name: Comment PR with quality report
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('code_quality_report.md', 'utf8');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });
