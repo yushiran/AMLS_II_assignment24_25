@@ -87,12 +87,12 @@ def process_tomogram_set(tomogram_ids,images_dir, labels_dir, set_name,labels_df
         motor_counts.append(
             (tomo_id, now_motor_counts, tomo_shape))
     
-    with ProcessPoolExecutor(max_workers=16) as executor:  # 用多进程代替多线程
+    with ProcessPoolExecutor(max_workers=16) as executor: 
         futures = [executor.submit(process_single_tomogram, tomo_id, location, shape, images_dir, labels_dir) 
                 for tomo_id, location, shape in motor_counts]
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing tomograms"):
             try:
-                future.result()  # 手动释放内存
+                future.result()
                 gc.collect()
             except Exception as e:
                 print(f"Error in processing tomogram: {e}")
@@ -248,7 +248,7 @@ def unet_train_main():
             for batch in epoch_iterator_val:
                 val_inputs, val_labels = batch["image"].to(config.DEVICE), batch["label"].to(config.DEVICE)
                 val_outputs = sliding_window_inference(val_inputs, (32, 32, 32), 4, model)
-                # 直接计算MSE，不做threshold操作
+                # Directly calculate MSE without applying threshold
                 batch_mse = loss_function(val_outputs, val_labels).item()
                 total_mse += batch_mse
                 count += 1
@@ -333,20 +333,20 @@ def unet_infer_main():
     model.load_state_dict(torch.load(os.path.join(config.UNET_MODEL_DIR, "best_metric_model.pth"), weights_only=True))
     model.eval()
        
-    # 读取NIfTI
+    # Load NIfTI
     volume = nib.load('/home/yushiran/BYU_Locating_Bacterial_Flagellar_Motors_2025/3dunet_dataset/images/train/tomo_0de3ee.nii.gz').get_fdata().astype(np.float32)
-    # 扩展成 [B, C, D, H, W]
+    # expand to [B, C, D, H, W]
     volume_tensor = torch.from_numpy(volume[None, None]).to(config.DEVICE)
 
-    # 用sliding_window_inference自动切分并重拼
+    # Automatically split and reassemble using sliding_window_inference
     with torch.no_grad():
         pred = sliding_window_inference(
             volume_tensor, (32, 32, 32), 16, model, overlap=0.1
         )
-    # 存为NIfTI
+    # Save as NIfTI
     result = pred.squeeze(0).squeeze(0).cpu().numpy()
 
-    # 局部极大值检测，min_distance表示峰之间的最小距离，可以调整
+    # Local maxima detection, min_distance specifies the minimum distance between peaks, can be adjusted
     peaks = peak_local_max(result, min_distance=30, threshold_abs=0.009)
 
     if peaks.size == 0:
@@ -356,7 +356,6 @@ def unet_infer_main():
         for coord in peaks:
             print(coord)
 
-    # 保存预测图
     nib.save(
         nib.Nifti1Image(result.astype(np.float32), np.eye(4)),
         os.path.join(config.UNET_OUTPUT_DIR, "val_outputs.nii")
